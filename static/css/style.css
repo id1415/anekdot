@@ -66,3 +66,7 @@ hr {
     background-color: rgb(0, 0, 0); /* Цвет линии для браузера Firefox и Opera */
     height: 2px; /* Толщина линии */
    }
+
+.form-control {
+    height: 50px;
+}
