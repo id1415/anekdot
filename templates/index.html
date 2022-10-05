@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% for post in posts %}
+        <p class="font0">{{ post['anekdot'] }}</p>
+    <hr class="line0">
+    {% endfor %}
+
+{% endblock %}
