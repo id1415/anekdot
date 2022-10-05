@@ -1,6 +1,5 @@
 import sqlite3
 from flask import Flask, render_template
-from random import randint
 
 
 def get_db_connection():
@@ -18,3 +17,7 @@ def index():
     posts = conn.execute('select * from anekdot order by random()').fetchmany(10)
     conn.close()
     return render_template('index.html', posts=posts)
+
+
+if __name__ == '__main__':
+    app.run()
