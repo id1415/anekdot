@@ -23,8 +23,8 @@
                 <h1 class="head0">Анекдоты</h1>
                 <p class="some_text">
                     {% block content %}
-                        {% for post in posts %}
-                            <p class="font0">{{ post }}</p>
+                        {% for result in results %}
+                            <p class="font0">{{ result }}</p>
                             <hr class="line0">
                         {% endfor %}
                     {% endblock %}

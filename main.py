@@ -1,10 +1,31 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import json
 import random
+from forms import SearchForm
 
 
 app = Flask(__name__)
 data = json.load(open('anekdot.json', encoding='utf-8'))
+s = []
+
+# Ввод в поиск
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    search = SearchForm(request.form)
+    if request.method == 'POST':
+        for anekdot in data:
+            if search.data['search'] in anekdot['anekdot']:
+                s.append(anekdot['anekdot'])
+        return search_results(search)
+
+    return render_template('search.html', form=search)
+
+# Результат поиска
+@app.route('/results')
+def search_results(search):
+    results = s
+    print(results)
+    return render_template('results.html', results=results)
 
 
 @app.route('/')
