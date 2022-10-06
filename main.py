@@ -6,16 +6,18 @@ from forms import SearchForm
 
 app = Flask(__name__)
 data = json.load(open('anekdot.json', encoding='utf-8'))
-s = []
+s1 = []
 
 # Ввод в поиск
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    global s1
     search = SearchForm(request.form)
+    s1 = []
     if request.method == 'POST':
         for anekdot in data:
             if search.data['search'] in anekdot['anekdot']:
-                s.append(anekdot['anekdot'])
+                s1.append(anekdot['anekdot'])
         return search_results(search)
 
     return render_template('search.html', form=search)
@@ -23,8 +25,7 @@ def search():
 # Результат поиска
 @app.route('/results')
 def search_results(search):
-    results = s
-    print(results)
+    results = s1
     return render_template('results.html', results=results)
 
 
