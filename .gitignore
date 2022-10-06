@@ -6,5 +6,4 @@ anekdot.py
 anek.db
 IntegrityErrors.txt
 OperationalErrors.txt
-anekdot.json
 sqlite_sequence.json
