@@ -1,44 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Анекдоты{% endblock %}</title>
-    <meta name="description" content="Анекдоты">
-    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
-    <link rel="shortcut icon" href="#">
-</head>
+{% extends 'base.html' %}
 
-<body>
-    <header>
-        <img src="{{ url_for('static', filename= 'img/logo-0.png') }}" alt="Логотип">
-    </header>
-    
-    <!-- форма поиска -->
- 
-    <main>
-        <section class="section-0">
-            <div class="div-0">
-                <h1 class="head0">Анекдоты</h1>
-                <p class="some_text">
-                    {% block content %}
-                        {% for post in posts %}
-                            <p class="font0">{{ post }}</p>
-                            <hr class="line0">
-                        {% endfor %}
-                    {% endblock %}
-                </p>
-            </div>
-        </section>
-        <section></section>
-        <section>
-            <nav>
-                <ul>
-                    <li><a href="#">ОБНОВИТЬ</a></li>
-                </ul>
-            </nav>
-        </section>
-    </main>
-</body>
-</html>
+{% block content %}
+    {% for post in anekdots %}
+        <p class="font0">{{ post }}</p>
+        <hr class="line0">
+    {% endfor %}
+{% endblock %}
