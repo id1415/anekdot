@@ -26,7 +26,8 @@ def index():
         random_number = random.randint(1, 71360)
         s.append(random_number)
     for id in s:
-        anekdots.append(f'{id} {data[id]["anekdot"]}')
+        newline = data[id]["anekdot"]
+        anekdots.append(f'{id}\n{newline}')
         
     return render_template('index.html', anekdots=anekdots)
 

@@ -40,6 +40,7 @@ li:last-child {
     border: 10px inset rgb(86, 86, 86);
     padding: 0px 15px 15px 15px;
     background-color: grey;
+    white-space: pre-line;
     /* width: 350px;
     height: 550px;
     position: relative; */
@@ -54,19 +55,28 @@ li:last-child {
 .head0 {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     text-align: center;
+    margin: 0;
+    margin-bottom: -80px;
 }
 
 .font0 {
-    font-size: 25px;
+    font-size: 20px;
 }
 
-hr {
-    border: none; /* Убираем границу для браузера Firefox */
-    color: rgb(0, 0, 0); /* Цвет линии для остальных браузеров */
-    background-color: rgb(0, 0, 0); /* Цвет линии для браузера Firefox и Opera */
-    height: 2px; /* Толщина линии */
-   }
+.line0{
+    border: none;
+    color: rgb(0, 0, 0);
+    background-color: rgb(0, 0, 0);
+    height: 1px;
+}
 
-.form-control {
-    height: 50px;
+.d1 input {
+    width: 20%;
+    height: 42px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    background: rgb(184, 184, 184);
+    font-size: 20px;
 }
