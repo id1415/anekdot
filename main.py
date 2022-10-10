@@ -1,25 +1,18 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import json
 import random
 
 
 app = Flask(__name__)
 data = json.load(open('anekdot.json', encoding='utf-8'))
-s1 = []
 
-
-@app.route('/<string:text>')
-def search(text):
-    global s1
-    s1 = []
-    for anekdot in data:
-        if text in anekdot['anekdot']:
-            s1.append(anekdot['anekdot'])
-    return render_template('results.html', results=s1)
-    
 
 @app.route('/')
 def index():
+    query = request.args.get('q')
+    if query != None:
+        return render_template('results.html', results=search(query))
+
     s = []
     anekdots = []
     for _ in range(10):
@@ -30,6 +23,15 @@ def index():
         anekdots.append(f'{id}\n{newline}')
         
     return render_template('index.html', anekdots=anekdots)
+
+
+def search(q):
+    q = request.args.get('q')
+    s1 = []
+    for anekdot in data:
+        if str(q) in anekdot['anekdot']:
+            s1.append(anekdot['anekdot'])
+    return s1
 
 
 if __name__ == '__main__':
