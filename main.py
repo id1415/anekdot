@@ -29,7 +29,7 @@ def search(q):
     q = request.args.get('q')
     s1 = []
     for anekdot in data:
-        if str(q) in anekdot['anekdot']:
+        if str(q).lower() in anekdot['anekdot'].lower():
             s1.append(anekdot['anekdot'])
     return s1
 
