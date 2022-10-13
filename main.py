@@ -6,6 +6,7 @@ import random
 
 app = Flask(__name__)
 data = json.load(open('anekdot.json', encoding='utf-8'))
+print(len(data))
 
 
 @app.route('/')
@@ -17,12 +18,12 @@ def index():
         results = []
         for anekdot in data:
             if str(query).lower() in anekdot['anekdot'].lower():
-                results.append(anekdot['anekdot'])
+                results.append(f"{anekdot['id']}\n{anekdot['anekdot']}")
         total = len(results)
         pagination_anekdots = results[offset: offset + 10]
         pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
-                            
+
         return render_template('results.html', 
                                 results=pagination_anekdots,
                                 page=page,
@@ -32,7 +33,7 @@ def index():
     id = []
     anekdots = []
     for _ in range(10):
-        random_number = random.randint(1, 71360)
+        random_number = random.randint(1, 99814)
         id.append(random_number)
     for i in id:
         newline = data[i]["anekdot"]
