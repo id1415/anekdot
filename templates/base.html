@@ -18,6 +18,9 @@
         <form class="form-inline">
             <input class="form-control" type="search" name="q" placeholder="Искать здесь...">
         </form>
+        {% block search %}
+
+        {% endblock %}
     </div>
     <main>
         <section class="section-0">
@@ -30,7 +33,11 @@
                 </p>
             </div>
         </section>
-        <section></section>
+        <section>
+            {% block search1 %}
+
+            {% endblock %}
+        </section>
         <section>
             <nav>
                 <ul>
