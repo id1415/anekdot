@@ -6,7 +6,6 @@ import random
 
 app = Flask(__name__)
 data = json.load(open('anekdot.json', encoding='utf-8'))
-print(len(data))
 
 
 @app.route('/')
@@ -21,8 +20,12 @@ def index():
                 results.append(f"{anekdot['id']}\n{anekdot['anekdot']}")
         total = len(results)
         pagination_anekdots = results[offset: offset + 10]
-        pagination = Pagination(page=page, per_page=per_page, total=total,
-                            css_framework='bootstrap4')
+        pagination = Pagination(page=page, 
+                                per_page=per_page, 
+                                total=total,
+                                css_framework='Bootstrap3', 
+                                display_msg=f'Найдено {total} анекдотов',
+                                )
 
         return render_template('results.html', 
                                 results=pagination_anekdots,
