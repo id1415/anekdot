@@ -94,3 +94,7 @@ li:last-child {
     margin-left: 0;
     font-size: 18px;
 }
+
+.active {
+    text-decoration: underline;
+}
