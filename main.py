@@ -36,13 +36,18 @@ def index():
     id = []
     anekdots = []
     for _ in range(10):
-        random_number = random.randint(1, 99814)
+        random_number = random.randint(1, 111707)
         id.append(random_number)
     for i in id:
         newline = data[i]["anekdot"]
         anekdots.append(f'{i}\n{newline}')
         
     return render_template('index.html', anekdots=anekdots)
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 if __name__ == '__main__':

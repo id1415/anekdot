@@ -28,7 +28,7 @@ a:hover {
 
 li {
     display: inline;
-    margin-right: 9px;
+    margin-right: 10px;
 }
 
 li:last-child {
@@ -97,4 +97,8 @@ li:last-child {
 
 .active {
     text-decoration: underline;
+}
+
+.niz {
+    display: contents;
 }
