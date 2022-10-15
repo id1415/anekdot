@@ -102,3 +102,7 @@ li:last-child {
 .niz {
     display: contents;
 }
+
+.code {
+    color: blue;
+}
