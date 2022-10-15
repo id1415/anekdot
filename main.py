@@ -11,7 +11,7 @@ data = json.load(open('anekdot.json', encoding='utf-8'))
 @app.route('/')
 def index():
     query = request.args.get('q')
-    if query:
+    if query and query != ' ':
         page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
         results = []
