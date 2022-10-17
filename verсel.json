@@ -3,13 +3,14 @@
     "name": "anekdot-chi",
     "builds": [
       {
-        "src": "main.py",
-        "use": "@vercel/python"
+        "src": "** /*.py",
+        "use": "@now/python"
       }
     ],
     "routes": [
-      { "src": "/.*", 
-        "dest": "/" 
+      {
+        "src": "/flask",
+        "dest": "api/flask.py"
       }
     ]
   }
