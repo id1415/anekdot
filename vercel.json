@@ -3,7 +3,7 @@
     "name": "anekdot-chi",
     "builds": [
       {
-        "src": "./main.py",
+        "src": "./index.py",
         "use": "@vercel/python"
       }
     ],
