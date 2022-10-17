@@ -3,14 +3,14 @@
     "name": "anekdot-chi",
     "builds": [
       {
-        "src": "** /*.py",
-        "use": "@now/python"
+        "src": "*.py",
+        "use": "@now/flask"
       }
     ],
     "routes": [
       {
-        "src": "/flask",
-        "dest": "api/flask.py"
+        "src": "/.*",
+        "dest": "/"
       }
     ]
   }
