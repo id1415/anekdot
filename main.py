@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from flask_paginate import Pagination, get_page_args
-from app import Search, data
+from apps import Search, data
 from random import randint
 
 
@@ -39,8 +39,13 @@ def search():
                     per_page=per_page,
                     pagination=pagination
                     )
+
+    # не понимаю как избавиться от этого
     else:
-        return index()
+        if 'about' in request.url:
+            return about()
+        else:
+            return index()
 
 
 @app.route('/')
