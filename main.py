@@ -1,53 +1,50 @@
 from flask import Flask, render_template, request
 from flask_paginate import Pagination, get_page_args
-from json import load
+from app import Search, data
 from random import randint
 
 
 app = Flask(__name__)
-data = load(open('anekdot.json', encoding='utf-8'))  # загрузка json файла с анекдотами
 
 
-def search(q):
-    results = []  # сюда помещаются результаты поиска
-    for anekdot in data:  # поиск
-        if str(q).lower() in anekdot['anekdot'].lower():
-            results.append(f"{anekdot['id']}\n{anekdot['anekdot']}")
+# поиск и пагинация результатов
+@app.route('/')
+@app.route('/about')
+def search():
+    q = Search(request.args.get('q'))  # запрос в поиске
+    if q.status():
 
-    total = len(results)  # количество найденных анекдотов
+        results = []  # сюда помещаются результаты поиска
+        for anekdot in data:
+            if str(q.query).lower() in anekdot['anekdot'].lower():
+                results.append(f"{anekdot['id']}\n{anekdot['anekdot']}")
 
-    # настройка для пагинации страницы с результатами поиска
-    page, per_page, offset = get_page_args(page_parameter='page',
-                                        per_page_parameter='per_page')
+        total = len(results)  # количество найденных анекдотов
 
-    pagination_anekdots = results[offset: offset + 10]  # сколько анекдотов выводить на страницу
+        page, per_page, offset = get_page_args(page_parameter='page',
+                                            per_page_parameter='per_page')
 
-    # пагинация
-    pagination = Pagination(page=page, 
-                            per_page=per_page, 
-                            total=total,
-                            css_framework='Bootstrap3', 
-                            display_msg=f'Найдено {total} анекдотов',
-                            )
-    return pagination_anekdots, page, per_page, pagination
+        pagination_anekdots = results[offset: offset + 10]  # сколько анекдотов выводить на страницу
+
+        pagination = Pagination(page=page, 
+                                per_page=per_page, 
+                                total=total,
+                                css_framework='Bootstrap3', 
+                                display_msg=f'Найдено {total} анекдотов'
+                                )
+
+        return render_template('results.html', 
+                    results=pagination_anekdots,
+                    page=page,
+                    per_page=per_page,
+                    pagination=pagination
+                    )
+    else:
+        return index()
 
 
 @app.route('/')
 def index():
-    
-    # блок для поиска
-    query = request.args.get('q')  # запрос в поиске
-    if query and query != ' ' and 100 > len(query) > 2:
-        render = search(query)
-        
-        # вывод страницы с результатами поиска
-        return render_template('results.html', 
-                                results=render[0],
-                                page=render[1],
-                                per_page=render[2],
-                                pagination=render[3],
-                                )
-
     # код для главной страницы
     id = []
     anekdots = []
@@ -61,24 +58,10 @@ def index():
     # вывод анекдотов на главную страницу
     return render_template('index.html', anekdots=anekdots)
 
+
  # страница О САЙТЕ
 @app.route('/about')
 def about():
-
-    # блок для поиска, копипаст
-    query = request.args.get('q')  # запрос в поиске
-    if query and query != ' ' and 100 > len(query) > 2:
-        render = search(query)
-        
-        # вывод страницы с результатами поиска
-        return render_template('results.html', 
-                                results=render[0],
-                                page=render[1],
-                                per_page=render[2],
-                                pagination=render[3],
-                                )
-
-    # вывод страницы about
     return render_template('about.html')
 
 
