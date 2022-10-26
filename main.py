@@ -5,18 +5,6 @@ from apps import data, Search, random_anekdot
 
 app = Flask(__name__)
 
-@app.route('/')
-@app.route('/about')
-def search():
-    q = Search(request.args.get('q'))  # запрос в поиске
-    if q.status():
-        return results(q)
-    else:
-        if 'about' in request.base_url:
-            return about()
-        else:
-            return index()
-
 
 # результаты поиска и пагинация
 def results(q):
@@ -50,12 +38,22 @@ def results(q):
 
 @app.route('/')
 def index():
+
+    q = Search(request.args.get('q'))  # запрос в поиске
+    if q.status():
+        return results(q)
+
     anekdots = random_anekdot()
     return render_template('index.html', anekdots=anekdots)
 
 
 @app.route('/about')
 def about():
+
+    q = Search(request.args.get('q'))  # запрос в поиске
+    if q.status():
+        return results(q)
+
     return render_template('about.html')
 
 
