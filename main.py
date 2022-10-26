@@ -41,7 +41,11 @@ def index():
 
     q = Search(request.args.get('q'))  # запрос в поиске
     if q.status():
+<<<<<<< HEAD
         return results(q.query)
+=======
+        return results(q)
+>>>>>>> e5055a48afa18db844f867696159fc1379030fe3
 
     anekdots = random_anekdot()
     return render_template('index.html', anekdots=anekdots)
@@ -52,7 +56,11 @@ def about():
 
     q = Search(request.args.get('q'))  # запрос в поиске
     if q.status():
+<<<<<<< HEAD
         return results(q.query)
+=======
+        return results(q)
+>>>>>>> e5055a48afa18db844f867696159fc1379030fe3
 
     return render_template('about.html')
 
