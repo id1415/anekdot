@@ -60,18 +60,6 @@ pre {
     margin: 0;
 }
 
-/* .head0 {
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    text-align: center;
-    margin: 0;
-    margin-bottom: -80px;
-} */
-
-/* .font0 {
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    font-size: 20px;
-} */
-
 .line0 {
     border: none;
     color: rgb(0, 0, 0);
@@ -117,4 +105,9 @@ pre {
 
 .code {
     color: blue;
+    text-decoration: underline;
+}
+
+h1 {
+    text-align: center;
 }
