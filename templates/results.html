@@ -7,8 +7,11 @@
 
 {% block content %}
     {% for result in results %}
-        <p class="font0">{{ result }}</p>
-        <hr class="line0">
+        {% for key, value in result.items() %}
+            <pre><b>{{ key }}</b></pre>
+            <pre>{{ value }}</pre>
+            <hr class="line0">
+        {% endfor %}
     {% endfor %}
 {% endblock %}
 

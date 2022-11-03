@@ -11,7 +11,7 @@ def results(q):
     results = []  # сюда помещаются результаты поиска
     for anekdot in data:
         if q.lower() in anekdot['anekdot'].lower():
-            results.append(f"{anekdot['id']}\n{anekdot['anekdot']}")
+            results.append({anekdot['id']: anekdot['anekdot']})
 
     total = len(results)  # количество найденных анекдотов
 

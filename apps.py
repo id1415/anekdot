@@ -18,6 +18,6 @@ def random_anekdot():
     for _ in range(10):
         random_number = randint(1, 111707)  # выбирается случайное число от 1 до 111707
         newline = data[random_number]["anekdot"]  # анекдот с id - случайным числом
-        anekdots.append(f'{random_number}\n{newline}')
+        anekdots.append({random_number: newline})
     
     return anekdots
