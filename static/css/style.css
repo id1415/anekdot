@@ -13,6 +13,9 @@ header {
 ul {
     text-align: center;
     padding: 0px;
+    display: block;
+    
+    flex-direction: row;
 }
 
 .aa {

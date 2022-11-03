@@ -25,31 +25,25 @@
         {% endblock search %}
     </div>
     <main>
-        <section class="section-0">
-            <div class="div-0">
-                <h1><b>{{ title }}</b></h1>
-                <p class="some_text">
-                    {% block content %}
-                        
-                    {% endblock content %}
-                </p>
-            </div>
-        </section>
-        <section>
-            {% block search1 %}
+        <div class="div-0">
+            <h1><b>{{ title }}</b></h1>
+            <p class="some_text">
+                {% block content %}
+                    
+                {% endblock content %}
+            </p>
+        </div>
+        {% block search1 %}
 
-            {% endblock search1 %}
-        </section>
-        <section>
-            <nav>
-                <ul>
-                    {% for m in menu %}
-                    <li><a class="aa" href="{{m.url}}">{{m.name}}</a></li>
-                    <br>
-                    {% endfor %}
-                </ul>
-            </nav>
-        </section>
+        {% endblock search1 %}
+        <nav>
+            <ul>
+                {% for m in menu %}
+                <li><a class="aa" href="{{m.url}}">{{m.name}}</a></li>
+                
+                {% endfor %}
+            </ul>
+        </nav>
     </main>
 </body>
 </html>
