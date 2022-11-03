@@ -14,13 +14,10 @@ class Search:
 
 
 def random_anekdot():
-    id = []
     anekdots = []
-    for _ in range(10):  # выбираются 10 случайных чисел от 1 до 111707
-        random_number = randint(1, 111707)
-        id.append(random_number)
-    for i in id:  # добавляются анекдоты с id - случайными числами
-        newline = data[i]["anekdot"]
-        anekdots.append(f'{i}\n{newline}')
+    for _ in range(10):
+        random_number = randint(1, 111707)  # выбирается случайное число от 1 до 111707
+        newline = data[random_number]["anekdot"]  # анекдот с id - случайным числом
+        anekdots.append(f'{random_number}\n{newline}')
     
     return anekdots

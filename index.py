@@ -10,7 +10,7 @@ app = Flask(__name__)
 def results(q):
     results = []  # сюда помещаются результаты поиска
     for anekdot in data:
-        if str(q).lower() in anekdot['anekdot'].lower():
+        if q.lower() in anekdot['anekdot'].lower():
             results.append(f"{anekdot['id']}\n{anekdot['anekdot']}")
 
     total = len(results)  # количество найденных анекдотов
@@ -21,7 +21,7 @@ def results(q):
     page, per_page, offset = get_page_args(page_parameter='page',
                                         per_page_parameter='per_page')
     
-    results = results[offset: offset + 10]  # число - сколько анекдотов выводить на страницу
+    results = results[offset: offset + 10]  # список из 10 анекдотов
 
     pagination = Pagination(page=page,
                             per_page=per_page,
