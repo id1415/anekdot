@@ -1,11 +1,15 @@
-from flask import Flask, render_template, request
-from apps import Search, random_anekdot
+import os
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, flash
+from apps import Search, random_anekdot, len_base, add_anekdot
 
-
+load_dotenv()
 app = Flask(__name__)
-exm = Search()
+app.secret_key = os.getenv('SECRET_KEY')
+exm = Search()  # для поиска
 menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         {'name': 'О САЙТЕ', 'url': 'about'},
+        {'name': 'ДОБАВИТЬ АНЕКДОТ', 'url': 'add'}
         ]
 
 
@@ -40,7 +44,7 @@ def index():
 @app.route('/about')
 def about():
 
-    # копипаст ¯\_(ツ)_/¯
+    # копипаст поиска ¯\_(ツ)_/¯
     global exm
     q = request.args.get('q')  # запрос в поиске
     exm = Search(q)
@@ -50,6 +54,35 @@ def about():
     return render_template('about.html',
                             menu=menu, 
                             title='О сайте',
+                            raw=len_base(),
+                            )
+
+
+@app.route('/add', methods = ['POST', 'GET'])
+def add():
+
+    # копипаст поиска ¯\_(ツ)_/¯
+    global exm
+    q = request.args.get('q')  # запрос в поиске
+    exm = Search(q)
+    if exm.status():
+        return results()
+    
+    # форма добавления анекдотов
+    if request.method == 'POST':
+        if 500 > len(request.form['message']) > 10:
+            new_anekdot = request.form
+            a = add_anekdot(new_anekdot['message'])
+            if a:
+                flash(f'Анекдот добавлен, ему присвоен id - {a}', category='success')
+            else:
+                flash('Ошибка', category='error')
+        else:
+            flash('Ошибка', category='error')
+
+    return render_template('add.html',
+                            menu=menu,
+                            title='Добавить анекдот',
                             )
 
 

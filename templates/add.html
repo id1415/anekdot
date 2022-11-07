@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<pre>
+<b>ВНИМАНИЕ!</b>
+В поле допускается от 10 до 500 символов.
+Просьба соблюдать грамматику, синтаксис и правила русского языка.
+Нарушение законов Российской Федерации, оскорбления, спам и флуд недопустимы.
+</pre>
+<!-- флэш сообщение об отправке -->
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+
+<form action="/add" method="post" class="form-add">
+<div>
+<p><textarea name="message"></textarea></p>
+</div>
+<p><input type="submit" value="Отправить" class="button"></p>
+</form>
+{% endblock %}

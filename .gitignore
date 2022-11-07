@@ -3,7 +3,7 @@ __pycache__
 .DS_Store
 .env
 anekdot.py
-anek.db
 IntegrityErrors.txt
 OperationalErrors.txt
 sqlite_sequence.json
+test.py

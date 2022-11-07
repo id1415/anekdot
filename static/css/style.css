@@ -114,3 +114,47 @@ pre {
 h1 {
     text-align: center;
 }
+
+textarea {
+    width: 100%;
+    height: 200px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    background: rgb(184, 184, 184);
+    font-size: 20px;
+    }
+
+.flash {
+    padding: 10px;
+}
+
+.flash.success {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 20px;
+    border: 1px solid #21DB56;
+    background: #AEFFC5;
+}
+
+.flash.error {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 20px;
+    border: 1px solid #FF4343;
+    background: #FF9C9C;
+}
+
+.button {
+    border: 2px solid #000000;
+    border-radius: 5px;
+    background: rgb(184, 184, 184);
+    font-size: 20px;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.button:active {
+    box-shadow: 0 1px 2px rgba(0,0,0,.1) inset;
+    background: rgb(110, 110, 110);
+}
