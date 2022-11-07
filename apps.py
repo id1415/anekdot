@@ -3,7 +3,7 @@ from random import randint
 from flask_paginate import Pagination, get_page_args
 
 # подключение к базе данных
-con = sqlite3.connect("anek.db", check_same_thread=False)
+con = sqlite3.connect("anecdote.db", check_same_thread=False)
 cur = con.cursor()
 
 sqlite_query = cur.execute("SELECT Count(*) from anekdot")
@@ -69,7 +69,7 @@ def random_anekdot():
 # функция вычисляет кол-во анекдотов в базе
 # число обновляется если пользователь добавит анекдот и перезайдёт на страницу about
 def len_base():
-    con = sqlite3.connect("anek.db", check_same_thread=False)
+    con = sqlite3.connect("anecdote.db", check_same_thread=False)
     cur = con.cursor()
     sqlite_query = cur.execute("SELECT Count(*) from anekdot")
     raw = cur.fetchone() # raw[0] - количество анекдотов в базе
