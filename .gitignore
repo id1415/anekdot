@@ -7,3 +7,4 @@ IntegrityErrors.txt
 OperationalErrors.txt
 sqlite_sequence.json
 test.py
+anecdote.db
