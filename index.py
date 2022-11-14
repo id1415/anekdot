@@ -1,10 +1,10 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, flash
-from apps import Search, random_anekdot, len_base, add_anekdot
+from flask import render_template, request, flash
+from apps import app, Search, random_anekdot, len_base, add_anekdot
 
 load_dotenv()
-app = Flask(__name__)
+
 app.secret_key = os.getenv('SECRET_KEY')
 exm = Search()  # для поиска
 menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},

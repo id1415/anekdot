@@ -1,13 +1,20 @@
-import sqlite3
+import yaml
+import os
+from dotenv import load_dotenv
+from flask import Flask
 from random import randint
 from flask_paginate import Pagination, get_page_args
+from flask_mysqldb import MySQL
 
-# подключение к базе данных
-con = sqlite3.connect("a.db", check_same_thread=False)
-cur = con.cursor()
+load_dotenv()
+app = Flask(__name__)
 
-sqlite_query = cur.execute("SELECT Count(*) from anekdot")
-raw = cur.fetchone() # raw[0] - количество анекдотов в базе
+app.config['MYSQL_HOST'] = os.getenv('mysql_host')
+app.config['MYSQL_USER'] = os.getenv('mysql_user')
+app.config['MYSQL_PASSWORD'] = os.getenv('mysql_password')
+app.config['MYSQL_DB'] = os.getenv('mysql_db')
+mysql = MySQL(app)
+
 
 class Search:
 
@@ -21,10 +28,10 @@ class Search:
     # поиск и пагинация результатов
     def search(self):
         results = []  # сюда помещаются результаты поиска
-
+        cur = mysql.connection.cursor()
         # поиск
-        sqlite_query = "SELECT id, text FROM anekdot"
-        cur.execute(sqlite_query)
+        mysql_query = "SELECT id, text FROM anek"
+        cur.execute(mysql_query)
         records = cur.fetchall()
         for record in records:
             if self.query.lower() in record[1].lower():
@@ -52,12 +59,13 @@ class Search:
 
 def random_anekdot():
 
+    cur = mysql.connection.cursor()
     anekdots = []
     for _ in range(10):
-        random_number = randint(1, 114060)  # выбирается случайное число от 1 до 111707
+        random_number = randint(1, 130263)  # выбирается случайное число 1-130263
         
         # вытаскивается анекдот из базы с id - случайным числом
-        sqlite_query = "SELECT text from anekdot WHERE id = ?"
+        sqlite_query = "SELECT text from anek WHERE id = %s"
         cur.execute(sqlite_query, (random_number,))
         newline = cur.fetchone()
 
@@ -69,21 +77,17 @@ def random_anekdot():
 # функция вычисляет кол-во анекдотов в базе
 # число обновляется если пользователь добавит анекдот и перезайдёт на страницу about
 def len_base():
-    con = sqlite3.connect("a.db", check_same_thread=False)
-    cur = con.cursor()
-    sqlite_query = cur.execute("SELECT Count(*) from anekdot")
-    raw = cur.fetchone() # raw[0] - количество анекдотов в базе
+
+    cur = mysql.connection.cursor()
+    raw = cur.execute("SELECT * from anek")  # количество анекдотов в базе
 
     return raw
 
 
 # добавление анекдота в базу
 def add_anekdot(new_anekdot):
-    try:
-        cur.execute("INSERT INTO anekdot(text) VALUES (?)", (new_anekdot,))
-        con.commit()
-        return cur.lastrowid
-    except sqlite3.IntegrityError:
-        return False
-    except sqlite3.OperationalError:
-        return False
+    with app.app_context():
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO anek(cat, text) VALUES (100, %s)", (new_anekdot,))
+        mysql.connection.commit()
+    return cur.lastrowid

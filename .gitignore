@@ -7,3 +7,7 @@ IntegrityErrors.txt
 OperationalErrors.txt
 sqlite_sequence.json
 test.py
+a.db
+del
+test.json
+db.yaml
