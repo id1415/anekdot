@@ -3,16 +3,16 @@ from dotenv import load_dotenv
 from flask import Flask
 from random import randint
 from flask_paginate import Pagination, get_page_args
-from flask_mysqldb import MySQL
+from flaskext.mysql import MySQL
 
 load_dotenv()
 app = Flask(__name__)
-
-app.config['MYSQL_HOST'] = os.getenv('mysql_host')
-app.config['MYSQL_USER'] = os.getenv('mysql_user')
-app.config['MYSQL_PASSWORD'] = os.getenv('mysql_password')
-app.config['MYSQL_DB'] = os.getenv('mysql_db')
-mysql = MySQL(app)
+mysql = MySQL()
+app.config['MYSQL_DATABASE_USER'] = os.getenv('mysql_user')
+app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('mysql_password')
+app.config['MYSQL_DATABASE_DB'] = os.getenv('mysql_db')
+app.config['MYSQL_DATABASE_HOST'] = os.getenv('mysql_host')
+mysql.init_app(app)
 
 
 class Search:
@@ -27,7 +27,7 @@ class Search:
     # поиск и пагинация результатов
     def search(self):
         # results = []  # сюда помещаются результаты поиска
-        cur = mysql.connection.cursor()
+        cur = mysql.connect().cursor()
         # поиск
         mysql_query = cur.execute("SELECT id, text FROM anek WHERE text LIKE %s", ['%' + self.query + '%'])
         results = cur.fetchall()
@@ -54,17 +54,17 @@ class Search:
 
 def random_anekdot():
 
-    cur = mysql.connection.cursor()
+    cur = mysql.connect().cursor()
     anekdots = []
     for _ in range(10):
         random_number = randint(1, 130263)  # выбирается случайное число 1-130263
         
         # вытаскивается анекдот из базы с id - случайным числом
-        mysql_query = "SELECT text from anek WHERE id = %s"
+        mysql_query = "SELECT id, text from anek WHERE id = %s"
         cur.execute(mysql_query, (random_number,))
         newline = cur.fetchone()
 
-        anekdots.append({random_number: newline[0]})
+        anekdots.append({newline[0]: newline[1]})
     
     return anekdots
 
@@ -73,17 +73,17 @@ def random_anekdot():
 # число обновляется если пользователь добавит анекдот и перезайдёт на страницу about
 def len_base():
 
-    cur = mysql.connection.cursor()
-    raw = cur.execute("SELECT MAX(id) from anek")  # количество анекдотов в базе
+    cur = mysql.connect().cursor()
+    cur.execute("SELECT MAX(id) from anek")  # количество анекдотов в базе
     result = cur.fetchone()
-    print(type(result[0]))
     return result[0]
 
 
 # добавление анекдота в базу
 def add_anekdot(new_anekdot):
     with app.app_context():
-        cur = mysql.connection.cursor()
+        con = mysql.connect()
+        cur = con.cursor()
         cur.execute("INSERT INTO anek(cat, text) VALUES (100, %s)", (new_anekdot,))
-        mysql.connection.commit()
+        con.commit()
     return cur.lastrowid
