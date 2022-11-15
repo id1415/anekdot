@@ -49,17 +49,15 @@ class Search:
                                 css_framework='Bootstrap3',
                                 display_msg=f'Найдено {total} анекдотов'
                                 )
-        cur.close()
-        con.close()
+
         return results, pagination
 
 
 def random_anekdot():
-
     con = mysql.connect()
     cur = con.cursor()
-
     anekdots = []
+    
     for _ in range(10):
         random_number = randint(1, 130263)  # выбирается случайное число 1-130263
         
@@ -69,9 +67,6 @@ def random_anekdot():
         newline = cur.fetchone()
 
         anekdots.append({newline[0]: newline[1]})
-
-    cur.close()
-    con.close()
     
     return anekdots
 
@@ -79,13 +74,10 @@ def random_anekdot():
 # функция вычисляет кол-во анекдотов в базе
 # число обновляется если пользователь добавит анекдот и перезайдёт на страницу about
 def len_base():
-
     con = mysql.connect()
     cur = con.cursor()
     cur.execute("SELECT MAX(id) from anek")  # количество анекдотов в базе
     result = cur.fetchone()
-    cur.close()
-    con.close()
     return result[0]
 
 
@@ -96,6 +88,4 @@ def add_anekdot(new_anekdot):
         cur = con.cursor()
         cur.execute("INSERT INTO anek(cat, text) VALUES (100, %s)", (new_anekdot,))
         con.commit()
-        cur.close()
-        con.close()
     return cur.lastrowid

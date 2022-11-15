@@ -7,9 +7,10 @@ load_dotenv()
 
 app.secret_key = os.getenv('SECRET_KEY')
 exm = Search()  # для поиска
+
 menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         {'name': 'О САЙТЕ', 'url': 'about'},
-        {'name': 'ДОБАВИТЬ АНЕКДОТ', 'url': 'add'}
+        {'name': 'ДОБАВИТЬ АНЕКДОТ', 'url': 'add'},
         ]
 
 
