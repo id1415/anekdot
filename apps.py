@@ -26,15 +26,11 @@ class Search:
 
     # поиск и пагинация результатов
     def search(self):
-        results = []  # сюда помещаются результаты поиска
+        # results = []  # сюда помещаются результаты поиска
         cur = mysql.connection.cursor()
         # поиск
-        mysql_query = "SELECT id, text FROM anek"
-        cur.execute(mysql_query)
-        records = cur.fetchall()
-        for record in records:
-            if self.query.lower() in record[1].lower():
-                results.append({record[0]: record[1]})
+        mysql_query = cur.execute("SELECT id, text FROM anek WHERE text LIKE %s", ['%' + self.query + '%'])
+        results = cur.fetchall()
 
         total = len(results)  # количество найденных анекдотов
 
@@ -64,8 +60,8 @@ def random_anekdot():
         random_number = randint(1, 130263)  # выбирается случайное число 1-130263
         
         # вытаскивается анекдот из базы с id - случайным числом
-        sqlite_query = "SELECT text from anek WHERE id = %s"
-        cur.execute(sqlite_query, (random_number,))
+        mysql_query = "SELECT text from anek WHERE id = %s"
+        cur.execute(mysql_query, (random_number,))
         newline = cur.fetchone()
 
         anekdots.append({random_number: newline[0]})
@@ -78,9 +74,10 @@ def random_anekdot():
 def len_base():
 
     cur = mysql.connection.cursor()
-    raw = cur.execute("SELECT * from anek")  # количество анекдотов в базе
-
-    return raw
+    raw = cur.execute("SELECT MAX(id) from anek")  # количество анекдотов в базе
+    result = cur.fetchone()
+    print(type(result[0]))
+    return result[0]
 
 
 # добавление анекдота в базу
