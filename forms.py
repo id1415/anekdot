@@ -7,3 +7,6 @@ from wtforms.validators import DataRequired, Length
 class TextForm(FlaskForm):
     text = TextAreaField(validators=[DataRequired(), Length(min=10, max=500)])
     recaptcha = RecaptchaField()
+
+class SearchForm(FlaskForm):
+    search = SearchField(validators=[DataRequired(), Length(min=3, max=30)], render_kw={"placeholder": "Искать здесь..."})

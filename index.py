@@ -1,16 +1,14 @@
 import os
 from dotenv import load_dotenv
 from flask import render_template, request, flash
-from apps import app, Search, random_anekdot, len_base, add_anekdot
-from forms import TextForm
+from apps import app, search, random_anekdot, len_base, add_anekdot
+from forms import TextForm, SearchForm
 
 load_dotenv()
 
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['RECAPTCHA_PUBLIC_KEY'] = os.getenv('RECAPTCHA_PUBLIC_KEY')
 app.config['RECAPTCHA_PRIVATE_KEY'] = os.getenv('RECAPTCHA_PRIVATE_KEY')
- 
-exm = Search()  # для поиска
 
 menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         {'name': 'О САЙТЕ', 'url': 'about'},
@@ -19,74 +17,72 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
 
 
 # результаты поиска
-def results():
-    search = exm.search()
+def results(s):
+    search1 = search(s)
 
     return render_template('results.html',
-                results=search[0],
-                pagination=search[1],
+                results=search1[0],
+                pagination=search1[1],
                 menu=menu,
+                search_form=SearchForm(),
                 )
 
 
 @app.route('/')
 def index():
 
-    global exm
-    q = request.args.get('q')  # запрос в поиске
-    exm = Search(q)
-    if exm.status():
-        return results()
+    search_form = SearchForm()
+    search = request.args.get('search')
+    if search:
+        return results(search)
 
     anekdots = random_anekdot()
     return render_template('index.html',
                             anekdots=anekdots,
                             menu=menu,
                             title='Анекдоты',
+                            search_form=search_form,
                             )
 
 
 @app.route('/about')
 def about():
 
-    # копипаст поиска ¯\_(ツ)_/¯
-    global exm
-    q = request.args.get('q')  # запрос в поиске
-    exm = Search(q)
-    if exm.status():
-        return results()
+    search_form = SearchForm()
+    search = request.args.get('search')
+    if search:
+        return results(search)
 
     return render_template('about.html',
                             menu=menu, 
                             title='О сайте',
                             raw=len_base(),
+                            search_form=search_form,
                             )
 
 
 @app.route('/add', methods = ['GET', 'POST'])
 def add():
 
-    # копипаст поиска ¯\_(ツ)_/¯
-    global exm
-    q = request.args.get('q')  # запрос в поиске
-    exm = Search(q)
-    if exm.status():
-        return results()
+    search_form = SearchForm()
+    search = request.args.get('search')
+    if search:
+        return results(search)
     
     # форма добавления анекдотов
-    form = TextForm()
-    a = 0
-    if form.validate_on_submit():
-        new_anekdot = form.text.data
+    text_form = TextForm()
+    if text_form.validate_on_submit():
+        new_anekdot = text_form.text.data
         a = add_anekdot(new_anekdot)
         flash(f'Анекдот добавлен, ему присвоен id - {a}', category='success')
-    elif form.recaptcha.errors:
+    elif text_form.recaptcha.errors:
         flash('Ошибка валидации!', category='error')
 
     return render_template('add.html',
                             menu=menu,
                             title='Добавить анекдот',
-                            form=form,
+                            text_form=text_form,
+                            search_form=search_form,
                             )
 
 

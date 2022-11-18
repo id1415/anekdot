@@ -14,9 +14,9 @@
 {% endfor %}
      
     <form method="POST">
-        {{ form.csrf_token }}
-        {{ form.text }}
-        {{ form.recaptcha }}
+        {{ text_form.csrf_token }}
+        {{ text_form.text }}
+        {{ text_form.recaptcha }}
         <input type="submit" value="Отправить">
     </form>
 
