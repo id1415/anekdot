@@ -12,11 +12,12 @@
 {% for cat, msg in get_flashed_messages(True) %}
 <div class="flash {{cat}}">{{msg}}</div>
 {% endfor %}
+     
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ form.text }}
+        {{ form.recaptcha }}
+        <input type="submit" value="Отправить">
+    </form>
 
-<form action="/add" method="post" class="form-add">
-<div>
-<p><textarea name="message"></textarea></p>
-</div>
-<p><input type="submit" value="Отправить" class="button"></p>
-</form>
 {% endblock %}
