@@ -13,12 +13,12 @@ app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('mysql_password')
 app.config['MYSQL_DATABASE_DB'] = os.getenv('mysql_db')
 app.config['MYSQL_DATABASE_HOST'] = os.getenv('mysql_host')
 mysql.init_app(app)
-con = mysql.connect()
-cur = con.cursor()
 
 
 # поиск и пагинация результатов
 def search(query):
+    con = mysql.connect()
+    cur = con.cursor()
     try:
         query = int(query)
         cur.execute("SELECT id, text FROM anek where id=%s", query)
@@ -48,6 +48,8 @@ def search(query):
 
 
 def random_anekdot():
+    con = mysql.connect()
+    cur = con.cursor()
     anekdots = []
     
     for _ in range(10):
@@ -66,6 +68,8 @@ def random_anekdot():
 # функция вычисляет кол-во анекдотов в базе
 # число обновляется если пользователь добавит анекдот и перезайдёт на страницу about
 def len_base():
+    con = mysql.connect()
+    cur = con.cursor()
     cur.execute("SELECT count(*) from anek")  # количество анекдотов в базе
     result = cur.fetchone()
     return result[0]
@@ -73,6 +77,8 @@ def len_base():
 
 # добавление анекдота в базу
 def add_anekdot(new_anekdot):
+    con = mysql.connect()
+    cur = con.cursor()
     cur.execute("INSERT INTO anek(cat, text) VALUES (100, %s)", (new_anekdot,))
     con.commit()
     return cur.lastrowid

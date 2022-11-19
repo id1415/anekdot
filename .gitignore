@@ -1,13 +1,6 @@
 *.pyc
 __pycache__
-.DS_Store
 .env
 anekdot.py
-IntegrityErrors.txt
-OperationalErrors.txt
-sqlite_sequence.json
 test.py
-a.db
-del
-test.json
-db.yaml
+Procfile
