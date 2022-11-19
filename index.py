@@ -30,8 +30,6 @@ def results(s):
 
 @app.route('/')
 def index():
-
-    search_form = SearchForm()
     search = request.args.get('search')
     if search:
         return results(search)
@@ -41,14 +39,12 @@ def index():
                             anekdots=anekdots,
                             menu=menu,
                             title='Анекдоты',
-                            search_form=search_form,
+                            search_form=SearchForm(),
                             )
 
 
 @app.route('/about')
 def about():
-
-    search_form = SearchForm()
     search = request.args.get('search')
     if search:
         return results(search)
@@ -57,14 +53,12 @@ def about():
                             menu=menu, 
                             title='О сайте',
                             raw=len_base(),
-                            search_form=search_form,
+                            search_form=SearchForm(),
                             )
 
 
 @app.route('/add', methods = ['GET', 'POST'])
 def add():
-
-    search_form = SearchForm()
     search = request.args.get('search')
     if search:
         return results(search)
@@ -82,7 +76,7 @@ def add():
                             menu=menu,
                             title='Добавить анекдот',
                             text_form=text_form,
-                            search_form=search_form,
+                            search_form=SearchForm(),
                             )
 
 
