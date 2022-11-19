@@ -1,5 +1,4 @@
 from flask import Flask
-from random import randint
 from flask_paginate import Pagination, get_page_args
 from flaskext.mysql import MySQL
 
@@ -20,7 +19,7 @@ def search(query):
         cur.execute("SELECT id, text FROM anek where id=%s", query)
         results = cur.fetchall()  # ...то выводится анекдот с id = int
     except ValueError:  # если нельзя...
-        cur.execute("SELECT id, text FROM anek WHERE text LIKE %s", ['%' + query + '%'])
+        cur.execute("SELECT id, text FROM anek WHERE text LIKE %s ORDER BY id DESC", ['%' + query + '%'])
         results = cur.fetchall()  # ...то поиск работает по прямому вхождению
 
     total = len(results)  # количество найденных анекдотов
