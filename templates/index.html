@@ -2,10 +2,8 @@
 
 {% block content %}
     {% for post in anekdots %}
-        {% for key, value in post.items() %}
-            <pre><b>{{ key }}</b></pre>
-            <pre>{{ value }}</pre>
-            <hr class="line0">
-        {% endfor %}
+        <pre><b>{{ post[0] }}</b></pre>
+        <pre>{{ post[1] }}</pre>
+        <hr class="line0">
     {% endfor %}
 {% endblock %}

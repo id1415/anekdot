@@ -1,31 +1,27 @@
-import os
-from dotenv import load_dotenv
 from flask import Flask
 from random import randint
 from flask_paginate import Pagination, get_page_args
 from flaskext.mysql import MySQL
 
-load_dotenv()
-app = Flask(__name__)
-mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = os.getenv('mysql_user')
-app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('mysql_password')
-app.config['MYSQL_DATABASE_DB'] = os.getenv('mysql_db')
-app.config['MYSQL_DATABASE_HOST'] = os.getenv('mysql_host')
-mysql.init_app(app)
+app = Flask(__name__)  # инициализатор фреймворка Flask
+mysql = MySQL()        # инициализатор бд MySQL
+mysql.init_app(app)    # ещё один инициализатор
 
 
 # поиск и пагинация результатов
 def search(query):
+
+    # соединение с базой данных
     con = mysql.connect()
     cur = con.cursor()
-    try:
+
+    try:  # если запрос в поиске можно перевести в int...
         query = int(query)
         cur.execute("SELECT id, text FROM anek where id=%s", query)
-        results = cur.fetchall()
-    except ValueError:
+        results = cur.fetchall()  # ...то выводится анекдот с id = int
+    except ValueError:  # если нельзя...
         cur.execute("SELECT id, text FROM anek WHERE text LIKE %s", ['%' + query + '%'])
-        results = cur.fetchall()
+        results = cur.fetchall()  # ...то поиск работает по прямому вхождению
 
     total = len(results)  # количество найденных анекдотов
 
@@ -41,32 +37,36 @@ def search(query):
                             per_page=per_page,
                             total=total,
                             css_framework='Bootstrap3',
-                            display_msg=f'Найдено {total} анекдотов'
+                            display_msg=f'Найдено {total} анекдотов',
                             )
 
     return results, pagination
 
 
+# вывод 10 случайных анекдотов на главную страницу
 def random_anekdot():
+
+    # соединение с базой данных
     con = mysql.connect()
     cur = con.cursor()
-    anekdots = []
-    
-    for _ in range(10):
-        random_number = randint(1, 130263)  # выбирается случайное число 1-130264
-        
-        # вытаскивается анекдот из базы с id - случайным числом
-        mysql_query = "SELECT id, text from anek WHERE id = %s"
-        cur.execute(mysql_query, (random_number,))
-        newline = cur.fetchone()
 
-        anekdots.append({newline[0]: newline[1]})
+    # SQL запросы
+    cur.execute("SELECT @min := MIN(id), @max := MAX(id) FROM anek")
+    cur.fetchone()
+    cur.execute("""
+                SELECT DISTINCT id, text 
+                FROM anek AS a 
+                JOIN ( SELECT FLOOR(@min + (@max - @min + 1) * RAND()) AS id 
+                FROM anek LIMIT 11) 
+                b USING (id)
+                LIMIT 10
+                """)
+    anekdots = cur.fetchall()
     
     return anekdots
 
 
 # функция вычисляет кол-во анекдотов в базе
-# число обновляется если пользователь добавит анекдот и перезайдёт на страницу about
 def len_base():
     con = mysql.connect()
     cur = con.cursor()
