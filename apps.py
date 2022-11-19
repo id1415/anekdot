@@ -2,9 +2,9 @@ from flask import Flask
 from flask_paginate import Pagination, get_page_args
 from flaskext.mysql import MySQL
 
-app = Flask(__name__)  # инициализатор фреймворка Flask
-mysql = MySQL()        # инициализатор бд MySQL
-mysql.init_app(app)    # ещё один инициализатор
+app = Flask(__name__)
+mysql = MySQL()
+mysql.init_app(app)
 
 
 # поиск и пагинация результатов
@@ -14,13 +14,27 @@ def search(query):
     con = mysql.connect()
     cur = con.cursor()
 
-    try:  # если запрос в поиске можно перевести в int...
+    try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
         query = int(query)
         cur.execute("SELECT id, text FROM anek where id=%s", query)
-        results = cur.fetchall()  # ...то выводится анекдот с id = int
-    except ValueError:  # если нельзя...
-        cur.execute("SELECT id, text FROM anek WHERE text LIKE %s ORDER BY id DESC", ['%' + query + '%'])
-        results = cur.fetchall()  # ...то поиск работает по прямому вхождению
+        results = cur.fetchall()
+
+    except ValueError:  # если запрос не переводится в int
+
+        # если в запросе два слова, разделённых ; то поиск работает по разбавочному вхождению
+        if ';' in query:
+            query = query.split(';')
+            cur.execute("""SELECT id, text FROM anek
+                    WHERE text RLIKE (%s) AND text RLIKE (%s)
+                    ORDER BY id DESC
+                    """, (query[0], query[1]))
+            results = cur.fetchall()
+
+        # если ; нет то поиск работает по прямому вхождению
+        else:
+            cur.execute("SELECT id, text FROM anek WHERE text LIKE %s ORDER BY id DESC", ['%' + query + '%'])
+            results = cur.fetchall()
+
 
     total = len(results)  # количество найденных анекдотов
 
