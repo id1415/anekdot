@@ -19,8 +19,13 @@ mysql.init_app(app)
 def search(query):
     con = mysql.connect()
     cur = con.cursor()
-    mysql_query = cur.execute("SELECT id, text FROM anek WHERE text LIKE %s", ['%' + query + '%'])
-    results = cur.fetchall()
+    try:
+        query = int(query)
+        cur.execute("SELECT id, text FROM anek where id=%s", query)
+        results = cur.fetchall()
+    except ValueError:
+        cur.execute("SELECT id, text FROM anek WHERE text LIKE %s", ['%' + query + '%'])
+        results = cur.fetchall()
 
     total = len(results)  # количество найденных анекдотов
 
