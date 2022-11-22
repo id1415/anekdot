@@ -22,12 +22,16 @@ def search(query):
     except ValueError:  # если запрос не переводится в int
 
         # если в запросе два слова, разделённых ; то поиск работает по разбавочному вхождению
-        if ';' in query:
+        if ';' in query and query[0] != ';' and query[-1] != ';':
             query = query.split(';')
-            cur.execute("""SELECT id, text FROM anek
-                    WHERE text RLIKE (%s) AND text RLIKE (%s)
-                    ORDER BY id DESC
-                    """, (query[0], query[1]))
+            query = [i.strip() for i in query]
+            
+            query_db = """SELECT id, text FROM anek\nWHERE text RLIKE (%s)\n"""
+            for _ in range(len(query) - 1):
+                query_db += 'AND text RLIKE (%s)\n'
+            query_db += 'ORDER BY id DESC'
+            cur.execute(query_db, [i for i in query])
+
             results = cur.fetchall()
 
         # если ; нет то поиск работает по прямому вхождению
