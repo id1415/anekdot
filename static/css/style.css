@@ -47,11 +47,11 @@ li:last-child {
 }
 
 .div-0 {
-    /* margin: 0 auto; */
-    border: 10px inset rgb(86, 86, 86);
+    border: 2px solid rgb(0, 0, 0);
     padding: 0px 15px 15px 15px;
     background-color: grey;
     white-space: normal;
+    border-radius: 5px;
 
 }
 

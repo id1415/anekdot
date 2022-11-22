@@ -69,7 +69,6 @@ def random_anekdot():
 
     # SQL запросы
     cur.execute("SELECT @min := MIN(id), @max := MAX(id) FROM anek")
-    cur.fetchone()
     cur.execute("""
                 SELECT DISTINCT id, text 
                 FROM anek AS a 
@@ -87,7 +86,7 @@ def random_anekdot():
 def len_base():
     con = mysql.connect()
     cur = con.cursor()
-    cur.execute("SELECT count(*) from anek")  # количество анекдотов в базе
+    cur.execute("SELECT count(*) from anek")
     result = cur.fetchone()
     return result[0]
 
