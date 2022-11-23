@@ -14,6 +14,7 @@ app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('mysql_password')
 app.config['MYSQL_DATABASE_DB'] = os.getenv('mysql_db')
 app.config['MYSQL_DATABASE_HOST'] = os.getenv('mysql_host')
 
+# меню сайта
 menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         {'name': 'О САЙТЕ', 'url': 'about'},
         {'name': 'ДОБАВИТЬ АНЕКДОТ', 'url': 'add'},
@@ -32,6 +33,7 @@ def results(s):
                 )
 
 
+# главная страница
 @app.route('/')
 def index():
 
@@ -50,6 +52,7 @@ def index():
                             )
 
 
+# страница О САЙТЕ
 @app.route('/about')
 def about():
 
@@ -66,6 +69,7 @@ def about():
                             )
 
 
+# страница ДОБАВИТЬ АНЕКДОТ
 @app.route('/add', methods = ['GET', 'POST'])
 def add():
 

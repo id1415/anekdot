@@ -5,9 +5,11 @@ from wtforms.validators import DataRequired, Length
 
 # Форма добавления анекдотов + капча
 class TextForm(FlaskForm):
-    text = TextAreaField(validators=[DataRequired(), Length(min=10, max=500)])
+    text = TextAreaField(validators=[DataRequired(), Length(min=10, max=1000)])
     recaptcha = RecaptchaField()
 
 # Форма поиска
 class SearchForm(FlaskForm):
-    search = SearchField(validators=[DataRequired(), Length(min=3, max=50)], render_kw={"placeholder": "Искать здесь..."})
+    search = SearchField(validators=[DataRequired(), Length(min=3, max=50)], 
+                         render_kw={"placeholder": "Искать здесь..."}
+                        )
