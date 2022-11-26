@@ -30,6 +30,7 @@ def results(s):
                 pagination=results[1],
                 menu=menu,
                 search_form=SearchForm(),
+                title=s,
                 )
 
 
