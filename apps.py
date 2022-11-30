@@ -97,6 +97,6 @@ def len_base():
 def add_anekdot(new_anekdot):
     con = mysql.connect()
     cur = con.cursor()
-    cur.execute("INSERT INTO anek(cat, text) VALUES (100, %s)", (new_anekdot,))
+    cur.execute("INSERT INTO anek text VALUES %s", (new_anekdot,))
     con.commit()
     return cur.lastrowid
