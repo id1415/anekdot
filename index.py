@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from flask import render_template, request, flash
 from apps import app, search, random_anekdot, len_base, add_anekdot
-from forms import TextForm, SearchForm
+from forms import TextForm, SearchForm, LikeForm
 
 # переменные окружения
 load_dotenv()
@@ -34,9 +34,17 @@ def results(s):
                 )
 
 
+
+
+
 # главная страница
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+
+    like_form = LikeForm()
+    if request.method == 'POST':
+        if like_form.validate_on_submit:
+            print('liked')
 
     # запрос в поле поиска
     query = request.args.get('search')
@@ -50,13 +58,13 @@ def index():
                             menu=menu,
                             title='Анекдоты',
                             search_form=SearchForm(),  # поле поиска
+                            like_form=like_form,
                             )
 
 
 # страница О САЙТЕ
 @app.route('/about')
 def about():
-
     # запрос в поле поиска
     query = request.args.get('search')
     if query:
@@ -73,7 +81,6 @@ def about():
 # страница ДОБАВИТЬ АНЕКДОТ
 @app.route('/add', methods = ['GET', 'POST'])
 def add():
-
     # запрос в поле поиска
     query = request.args.get('search')
     if query:
@@ -96,4 +103,4 @@ def add():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
