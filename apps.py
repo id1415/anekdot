@@ -72,7 +72,7 @@ def random_anekdot():
     # SQL запросы
     cur.execute("SELECT @min := MIN(id), @max := MAX(id) FROM anek")
     cur.execute("""
-                SELECT DISTINCT id, text 
+                SELECT id, text 
                 FROM anek AS a 
                 JOIN ( SELECT FLOOR(@min + (@max - @min + 1) * RAND()) AS id 
                 FROM anek LIMIT 11) 
@@ -80,7 +80,6 @@ def random_anekdot():
                 LIMIT 10
                 """)
     anekdots = cur.fetchall()
-    
     return anekdots
 
 
@@ -88,7 +87,7 @@ def random_anekdot():
 def len_base():
     con = mysql.connect()
     cur = con.cursor()
-    cur.execute("SELECT count(*) from anek")
+    cur.execute("SELECT max(id) from anek")
     result = cur.fetchone()
     return result[0]
 

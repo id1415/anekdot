@@ -4,33 +4,37 @@
     {% for post in anekdots %}
         <pre><b>{{ post[0] }}</b></pre>
         <pre>{{ post[1] }}</pre>
-
-        <!-- кнопка дизлайка -->
-        <!-- <form method="post">
-        <input type="image" class="dislike" name="dislike" value="dislike" onclick="this.disabled=true;"></input> 
-        </form> -->
-
-        <script>
-            function like(elem){
-                elem.disabled=true
-            }
-        </script>
-
-        <script>
-            function dislike(elem){
-                elem.disabled=true
-            }
-        </script>
         
-        <form method="POST">
+        <form action="/" method="post">
             {{ like_form.dislike }}
             {{ like_form.like }}
         </form>
-        <!-- кнопка лайка -->
-        <!-- <form method="post">
-        <input type="image" class="like" id="like" name="like" value="like" onclick="like(this)"></input> 
-        </form> -->
 
         <hr class="line0">
     {% endfor %}
+
+    <script>
+        $(".like").click(function () {
+
+            $.ajax({
+                url:'/',
+                type:'POST',
+                data:{'like':1},
+            });
+
+            this.disabled=true;
+        })
+
+        $(".dislike").click(function () {
+
+            $.ajax({
+                url:'/',
+                type:'POST',
+                data:{'dislike':1},
+            });
+
+            this.disabled=true;
+        })
+    </script>
+
 {% endblock %}

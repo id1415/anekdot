@@ -34,24 +34,19 @@ def results(s):
                 )
 
 
-
-
-
 # главная страница
 @app.route('/', methods=['GET', 'POST'])
 def index():
-
-    like_form = LikeForm()
-    if request.method == 'POST':
-        if like_form.validate_on_submit:
-            print('liked')
-
     # запрос в поле поиска
     query = request.args.get('search')
     if query:
         return results(query)
 
     anekdots = random_anekdot()  # функция выводит 10 случайных анекдотов на страницу
+
+    like_form = LikeForm()
+    if request.method == 'POST':
+        print(request.form)
 
     return render_template('index.html',
                             anekdots=anekdots,
