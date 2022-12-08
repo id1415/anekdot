@@ -45,8 +45,8 @@ def index():
     anekdots = random_anekdot()  # функция выводит 10 случайных анекдотов на страницу
 
     like_form = LikeForm()
-    if request.method == 'POST':
-        print(request.form)
+    # if request.method == 'POST':
+    #     print(request.form)
 
     return render_template('index.html',
                             anekdots=anekdots,
