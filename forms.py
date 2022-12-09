@@ -16,5 +16,5 @@ class SearchForm(FlaskForm):
 
 # Кнопки лайк и дизлайк
 class LikeForm(FlaskForm):
-    like = SubmitField(render_kw={"class": 'like', "type": 'image'})
-    dislike = SubmitField(render_kw={"class": 'dislike', "type": 'image'})
+    like = SubmitField(render_kw={"class": 'like', "type": 'image', "alt": 'like'})
+    dislike = SubmitField(render_kw={"class": 'dislike', "type": 'image', "alt": 'dislike'})
