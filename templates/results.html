@@ -7,7 +7,7 @@
 
 {% block content %}
     {% for result in results %}
-        <pre><b>{{ result[0] }}</b></pre>
+        <pre><b>{{ result[0] }}  Рейтинг: {{ result[2] }}</b></pre>
         <pre>{{ result[1] }}</pre>
         <hr class="line0">
     {% endfor %}

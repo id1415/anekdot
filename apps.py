@@ -16,7 +16,7 @@ def search(query):
 
     try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
         query = int(query)
-        cur.execute("SELECT id, text FROM anek where id=%s", query)
+        cur.execute("SELECT id, text, rating FROM anek where id=%s", query)
         results = cur.fetchall()
 
     except ValueError:  # если запрос не переводится в int
@@ -27,18 +27,17 @@ def search(query):
             query = [i.strip() for i in query]
             
             # составление SQL запроса
-            query_db = """SELECT id, text FROM anek\nWHERE text RLIKE (%s)\n"""
+            query_db = """SELECT id, text, rating FROM anek\nWHERE text RLIKE (%s)\n"""
             for _ in range(len(query) - 1):
                 query_db += 'AND text RLIKE (%s)\n'
             query_db += 'ORDER BY id DESC'
             
             cur.execute(query_db, [i for i in query])
-
             results = cur.fetchall()
 
         # если ; нет то поиск работает по прямому вхождению
         else:
-            cur.execute("SELECT id, text FROM anek WHERE text LIKE %s ORDER BY id DESC", ['%' + query + '%'])
+            cur.execute("SELECT id, text, rating FROM anek WHERE text LIKE %s ORDER BY id DESC", ['%' + query + '%'])
             results = cur.fetchall()
 
 
@@ -72,18 +71,19 @@ def random_anekdot():
     # SQL запросы
     cur.execute("SELECT @min := MIN(id), @max := MAX(id) FROM anek")
     cur.execute("""
-                SELECT id, text 
+                SELECT id, text, rating
                 FROM anek AS a 
                 JOIN ( SELECT FLOOR(@min + (@max - @min + 1) * RAND()) AS id 
                 FROM anek LIMIT 11) 
                 b USING (id)
                 LIMIT 10
                 """)
+
     anekdots = cur.fetchall()
     return anekdots
 
 
-# функция вычисляет кол-во анекдотов в базе
+# функция выдаёт максимальный id = кол-во анекдотов в базе
 def len_base():
     con = mysql.connect()
     cur = con.cursor()
@@ -99,3 +99,26 @@ def add_anekdot(new_anekdot):
     cur.execute("INSERT INTO anek (text) VALUES (%s)", (new_anekdot,))
     con.commit()
     return cur.lastrowid
+
+
+# Лайк
+def likes(id):
+    con = mysql.connect()
+    cur = con.cursor()
+    cur.execute("UPDATE anek SET rating = rating + 1 WHERE id = (%s)", (id,))
+    con.commit()
+
+# дизлайк
+def dislikes(id):
+    con = mysql.connect()
+    cur = con.cursor()
+    cur.execute("UPDATE anek SET rating = rating - 1 WHERE id = (%s)", (id,))
+    con.commit()
+
+# рейтинг
+def rating(id):
+    con = mysql.connect()
+    cur = con.cursor()
+    cur.execute("SELECT rating FROM anek WHERE id = (%s)", (id,))
+    rate = cur.fetchone()
+    return rate

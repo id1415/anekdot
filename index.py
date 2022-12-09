@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from flask import render_template, request, flash
-from apps import app, search, random_anekdot, len_base, add_anekdot
+from apps import app, search, random_anekdot, len_base, add_anekdot, likes, dislikes, rating
 from forms import TextForm, SearchForm, LikeForm
 
 # переменные окружения
@@ -44,15 +44,21 @@ def index():
 
     anekdots = random_anekdot()  # функция выводит 10 случайных анекдотов на страницу
 
+    # Лайк, дизлайк
     like_form = LikeForm()
-    # if request.method == 'POST':
-    #     print(request.form)
+    if request.method == 'POST':
+        like = request.form['like']
+        dislike = request.form['dislike']
+        if like:
+            likes(like)
+        if dislike:
+            dislikes(dislike)
 
     return render_template('index.html',
                             anekdots=anekdots,
                             menu=menu,
                             title='Анекдоты',
-                            search_form=SearchForm(),  # поле поиска
+                            search_form=SearchForm(),
                             like_form=like_form,
                             )
 
@@ -69,7 +75,7 @@ def about():
                             menu=menu, 
                             title='О сайте',
                             raw=len_base(),  # количество анекдотов в базе
-                            search_form=SearchForm(), # поле поиска
+                            search_form=SearchForm(),
                             )
 
 
@@ -93,7 +99,7 @@ def add():
                             menu=menu,
                             title='Добавить анекдот',
                             text_form=text_form,
-                            search_form=SearchForm(), # поле поиска
+                            search_form=SearchForm(),
                             )
 
 

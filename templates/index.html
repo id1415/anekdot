@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+    <script>  // в список помещается id анекдотов
+        var lst = []
+    </script>
+
     {% for post in anekdots %}
-        <pre><b>{{ post[0] }}</b></pre>
+        <pre><b>{{ post[0] }}  Рейтинг: {{ post[2] }}</b></pre>
         <pre>{{ post[1] }}</pre>
         
         <form action="/" method="post">
@@ -11,26 +16,40 @@
         </form>
 
         <hr class="line0">
+
+        <script>  // добавление id анекдота в список lst
+            lst.push("{{post[0]}}");
+        </script>
+
     {% endfor %}
 
-    <script>
-        $(".like").click(function () {
+    <script>  // в цикле классам like и dislike присваиваются id из списка lst
+        for (var i = 0; i < 11; i++) {
+        document.getElementsByClassName("like")[i].id = lst[i];
+        document.getElementsByClassName("dislike")[i].id = lst[i];
+        }
+    </script>
 
+    <script>  // функция срабатывает по пользовательскому клику
+        $(".like").click(function () {
+            const elem = this.id;  // id элемента
             $.ajax({
                 url:'/',
                 type:'POST',
-                data:{'like':1},
+                data:{'like': elem, 'dislike': ''},  // эти данные передаются в бэкэнд
             });
 
-            this.disabled=true;
+            this.disabled=true;  // кнопка становится неактивной
         })
+    </script>
 
+    <script>  // всё то же самое для дизлайка
         $(".dislike").click(function () {
-
+            const elem = this.id;
             $.ajax({
                 url:'/',
                 type:'POST',
-                data:{'dislike':1},
+                data:{'like': '', 'dislike': elem},
             });
 
             this.disabled=true;
