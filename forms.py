@@ -11,8 +11,7 @@ class TextForm(FlaskForm):
 # Форма поиска
 class SearchForm(FlaskForm):
     search = SearchField(validators=[DataRequired(), Length(min=3, max=50)], 
-                         render_kw={"placeholder": "Искать здесь..."}
-                        )
+                         render_kw={"placeholder": "Искать здесь..."})
 
 # Кнопки лайк и дизлайк
 class LikeForm(FlaskForm):

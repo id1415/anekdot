@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from flask import render_template, request, flash
-from apps import app, search, random_anekdot, len_base, add_anekdot, likes, dislikes, rating
+from apps import app, search, random_anekdot, len_base, add_anekdot, likes, dislikes
 from forms import TextForm, SearchForm, LikeForm
 
 # переменные окружения

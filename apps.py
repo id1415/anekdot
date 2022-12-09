@@ -37,7 +37,10 @@ def search(query):
 
         # если ; нет то поиск работает по прямому вхождению
         else:
-            cur.execute("SELECT id, text, rating FROM anek WHERE text LIKE %s ORDER BY id DESC", ['%' + query + '%'])
+            cur.execute('''SELECT id, text, rating 
+                        FROM anek WHERE text LIKE %s 
+                        ORDER BY id DESC''', 
+                        ['%' + query + '%'])
             results = cur.fetchall()
 
 
@@ -70,14 +73,12 @@ def random_anekdot():
 
     # SQL запросы
     cur.execute("SELECT @min := MIN(id), @max := MAX(id) FROM anek")
-    cur.execute("""
-                SELECT id, text, rating
+    cur.execute("""SELECT id, text, rating
                 FROM anek AS a 
                 JOIN ( SELECT FLOOR(@min + (@max - @min + 1) * RAND()) AS id 
                 FROM anek LIMIT 11) 
                 b USING (id)
-                LIMIT 10
-                """)
+                LIMIT 10""")
 
     anekdots = cur.fetchall()
     return anekdots
@@ -108,17 +109,10 @@ def likes(id):
     cur.execute("UPDATE anek SET rating = rating + 1 WHERE id = (%s)", (id,))
     con.commit()
 
+
 # дизлайк
 def dislikes(id):
     con = mysql.connect()
     cur = con.cursor()
     cur.execute("UPDATE anek SET rating = rating - 1 WHERE id = (%s)", (id,))
     con.commit()
-
-# рейтинг
-def rating(id):
-    con = mysql.connect()
-    cur = con.cursor()
-    cur.execute("SELECT rating FROM anek WHERE id = (%s)", (id,))
-    rate = cur.fetchone()
-    return rate
