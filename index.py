@@ -91,6 +91,7 @@ def add():
     if text_form.validate_on_submit():     # если запрос - POST
         new_anekdot = text_form.text.data  # текст из формы
         a = add_anekdot(new_anekdot)       # добавление в базу
+        text_form = TextForm(formdata=None)
         flash(f'Анекдот добавлен, ему присвоен id - {a}', category='success')
     elif text_form.recaptcha.errors:  # если капча не сработала
         flash('Ошибка валидации!', category='error')
