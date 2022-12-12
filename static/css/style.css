@@ -48,7 +48,7 @@ li:last-child {
 
 .div-0 {
     border: 2px solid rgb(0, 0, 0);
-    padding: 0px 15px 35px 15px;
+    padding: 0px 15px 0px 15px;
     background-color: grey;
     white-space: normal;
     border-radius: 5px;
@@ -70,7 +70,7 @@ pre {
 }
 
 .line0:last-of-type {
-    display: none;
+    visibility: hidden;
 }
 
 
@@ -183,4 +183,15 @@ textarea {
 
 .dislike[disabled] {
     content: url('/static/img/dislike_active.png');
+}
+
+.rate {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+b {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 20px;
 }

@@ -7,7 +7,8 @@
     </script>
 
     {% for post in anekdots %}
-        <pre><b>{{ post[0] }}  Рейтинг: {{ post[2] }}</b></pre>
+        <pre><b>{{ post[0] }}</b></pre>
+        <b>Рейтинг: </b><b class="rate">{{ post[2] }}</b>
         <pre>{{ post[1] }}</pre>
         
         <form action="/" method="post">
@@ -16,12 +17,32 @@
         </form>
 
         <hr class="line0">
-
+        
         <script>  // добавление id анекдота в список lst
             lst.push("{{post[0]}}");
         </script>
 
     {% endfor %}
+    
+    <script> // По нажатию лайка увеличивается цифра рейтинга
+        document.addEventListener('click', ({ target: t }) => {
+            if (t.classList.contains('like')) {
+                const index = [...document.querySelectorAll('.like')].indexOf(t);
+                const count = document.querySelectorAll('.rate')[index];
+                count.innerText -= -1;
+            }
+        });
+    </script>
+
+    <script> // По нажатию дизлайка уменьшается цифра рейтинга
+        document.addEventListener('click', ({ target: t }) => {
+            if (t.classList.contains('dislike')) {
+                const index = [...document.querySelectorAll('.dislike')].indexOf(t);
+                const count = document.querySelectorAll('.rate')[index];
+                count.innerText -= 1;
+            }
+        });
+    </script>
 
     <script>  // в цикле классам like и dislike присваиваются id из списка lst
         for (var i = 0; i < 11; i++) {
