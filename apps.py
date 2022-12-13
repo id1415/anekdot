@@ -131,7 +131,7 @@ def last_anecdotes():
 def best_anecdotes():
     con = mysql.connect()
     cur = con.cursor()
-    cur.execute("SELECT * FROM anek ORDER BY rating DESC LIMIT 10")
+    cur.execute("SELECT * FROM anek ORDER BY rating DESC LIMIT 100")
     best = cur.fetchall()
 
     return best
