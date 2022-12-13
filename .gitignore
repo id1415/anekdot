@@ -3,3 +3,4 @@ __pycache__
 .env
 anekdot.py
 test
+static/scripts
