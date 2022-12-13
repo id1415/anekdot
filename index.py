@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 from flask import render_template, request, flash
-from apps import app, search, random_anekdot, len_base, add_anekdot, likes, dislikes
+from apps import app, search, random_anekdot, len_base, add_anekdot, \
+                        likes, dislikes, last_anecdotes, best_anecdotes
 from forms import TextForm, SearchForm, LikeForm
 
 # переменные окружения
@@ -16,8 +17,10 @@ app.config['MYSQL_DATABASE_HOST'] = os.getenv('mysql_host')
 
 # меню сайта
 menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
-        {'name': 'О САЙТЕ', 'url': 'about'},
-        {'name': 'ДОБАВИТЬ АНЕКДОТ', 'url': 'add'},
+        {'name': 'Лучшие анекдоты', 'url': 'best'},
+        {'name': 'Новые анекдоты', 'url': 'new'},
+        {'name': 'Добавить анекдот', 'url': 'add'},
+        {'name': 'О сайте', 'url': 'about'},
         ]
 
 
@@ -32,6 +35,24 @@ def results(s):
                 search_form=SearchForm(),
                 title=s,
                 )
+
+
+# Страница лучшие анекдоты
+@app.route('/best')
+def best():
+    # запрос в поле поиска
+    query = request.args.get('search')
+    if query:
+        return results(query)
+
+    best = best_anecdotes()
+
+    return render_template('best.html',
+                            menu=menu,
+                            title='Лучшие анекдоты',
+                            search_form=SearchForm(),
+                            results=best,
+                            )
 
 
 # главная страница
@@ -60,6 +81,24 @@ def index():
                             title='Анекдоты',
                             search_form=SearchForm(),
                             like_form=like_form,
+                            )
+
+
+# страница Новые анекдоты
+@app.route('/new')
+def new():
+    # запрос в поле поиска
+    query = request.args.get('search')
+    if query:
+        return results(query)
+    
+    new = last_anecdotes()
+
+    return render_template('new.html',
+                            menu=menu,
+                            title='Новые анекдоты',
+                            search_form=SearchForm(),
+                            new=new,
                             )
 
 

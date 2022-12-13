@@ -2,6 +2,15 @@
 <html lang="ru">
 <head>
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MSCSSYJC10"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MSCSSYJC10');
+    </script>
+
     <!-- vercel tag -->
     <script defer src="/va/script.js"></script>
     
@@ -12,7 +21,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <meta name="description" content="Случайные анекдоты.">
+    <meta name="description" content="Случайные анекдоты. Просто обнови страницу)">
     <meta name="keywords" content="анекдот, случайный анекдот">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
@@ -24,6 +33,13 @@
             <img src="{{ url_for('static', filename='img/logo-0.png') }}" alt="ха-ха">
         </a>
     </header>
+    <nav>
+        <ul>
+            {% for m in menu[1:] %}
+            <li><a class="aa" href="{{m.url}}">{{m.name}}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
     <div class="d1">
         <form>
             {{ search_form.search }}
@@ -46,7 +62,7 @@
         {% endblock search1 %}
         <nav>
             <ul>
-                {% for m in menu %}
+                {% for m in menu[0:1] %}
                 <li><a class="aa" href="{{m.url}}">{{m.name}}</a></li>
                 {% endfor %}
             </ul>

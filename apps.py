@@ -102,7 +102,7 @@ def add_anekdot(new_anekdot):
     return cur.lastrowid
 
 
-# Лайк
+# лайк
 def likes(id):
     con = mysql.connect()
     cur = con.cursor()
@@ -116,3 +116,22 @@ def dislikes(id):
     cur = con.cursor()
     cur.execute("UPDATE anek SET rating = rating - 1 WHERE id = (%s)", (id,))
     con.commit()
+
+
+# последние анекдоты
+def last_anecdotes():
+    con = mysql.connect()
+    cur = con.cursor()
+    cur.execute("SELECT * FROM anek ORDER BY id DESC LIMIT 10")
+    last = cur.fetchall()
+    return last
+
+
+# лучшие анекдоты
+def best_anecdotes():
+    con = mysql.connect()
+    cur = con.cursor()
+    cur.execute("SELECT * FROM anek ORDER BY rating DESC LIMIT 10")
+    best = cur.fetchall()
+
+    return best

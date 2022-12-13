@@ -8,11 +8,11 @@
 
     {% for post in anekdots %}
         <pre><b>{{ post[0] }}</b></pre>
-        <b>Рейтинг: </b><b class="rate">{{ post[2] }}</b>
         <pre>{{ post[1] }}</pre>
         
         <form action="/" method="post">
             {{ like_form.dislike }}
+            <b class="rate">{{ post[2] }}</b>
             {{ like_form.like }}
         </form>
 

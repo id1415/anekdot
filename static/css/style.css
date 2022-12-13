@@ -14,12 +14,7 @@ ul {
     text-align: center;
     padding: 0px;
     display: block;
-    
     flex-direction: row;
-}
-
-.aa {
-    text-decoration: underline;
 }
 
 a {
@@ -39,7 +34,7 @@ a:hover {
 
 li {
     display: inline;
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 li:last-child {
@@ -189,6 +184,8 @@ textarea {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 20px;
     font-weight: 700;
+    float: right;
+    padding-top: 10px;
 }
 
 b {
