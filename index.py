@@ -99,7 +99,8 @@ def new():
                             menu=menu,
                             title='Новые анекдоты',
                             search_form=SearchForm(),
-                            new=new,
+                            new=new[0],
+                            pagination=new[1]
                             )
 
 
