@@ -17,7 +17,7 @@ def search(query):
     try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
         query = int(query)
         cur.execute("SELECT id, text, rating FROM anek where id=%s", query)
-        results = cur.fetchall()
+        posts = cur.fetchall()
 
     except ValueError:  # если запрос не переводится в int
 
@@ -33,7 +33,7 @@ def search(query):
             query_db += 'ORDER BY id DESC'
             
             cur.execute(query_db, [i for i in query])
-            results = cur.fetchall()
+            posts = cur.fetchall()
 
         # если ; нет то поиск работает по прямому вхождению
         else:
@@ -41,10 +41,9 @@ def search(query):
                         FROM anek WHERE text LIKE %s 
                         ORDER BY id DESC''', 
                         ['%' + query + '%'])
-            results = cur.fetchall()
-
-
-    total = len(results)  # количество найденных анекдотов
+            posts = cur.fetchall()
+    
+    total = len(posts)  # количество найденных анекдотов
 
     # page - номер страницы
     # per_page - результатов на страницу
@@ -52,7 +51,7 @@ def search(query):
     page, per_page, offset = get_page_args(page_parameter='page',
                                         per_page_parameter='per_page')
     
-    results = results[offset: offset + 10]  # список из 10 анекдотов
+    posts = posts[offset: offset + 10]  # список из 10 анекдотов
 
     pagination = Pagination(page=page,
                             per_page=per_page,
@@ -61,7 +60,7 @@ def search(query):
                             display_msg=f'Найдено {total} анекдотов',
                             )
 
-    return results, pagination
+    return posts, pagination
 
 
 # вывод 10 случайных анекдотов на главную страницу
@@ -134,4 +133,21 @@ def best_anecdotes():
     cur.execute("SELECT * FROM anek ORDER BY rating DESC LIMIT 100")
     best = cur.fetchall()
 
-    return best
+    total = len(best)  # количество найденных анекдотов
+
+    # page - номер страницы
+    # per_page - результатов на страницу
+    # offset = (page - 1) * per_page
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                        per_page_parameter='per_page')
+    
+    best = best[offset: offset + 10]  # список из 10 анекдотов
+
+    pagination = Pagination(page=page,
+                            per_page=per_page,
+                            total=total,
+                            css_framework='Bootstrap3',
+                            display_msg=f'Найдено {total} анекдотов',
+                            )
+
+    return best, pagination

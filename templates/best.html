@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block search %}
+    {{ pagination.info }}
+    {{ pagination.links }}
+{% endblock %}
+
 {% block content %}
     {% for result in results %}
         <pre><b>{{ result[0] }}  Рейтинг: {{ result[2] }}</b></pre>
@@ -8,3 +13,6 @@
     {% endfor %}
 {% endblock %}
 
+{% block search1 %}
+    {{ pagination.links }}
+{% endblock %}

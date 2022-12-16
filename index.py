@@ -25,15 +25,15 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
 
 
 # результаты поиска
-def results(s):
-    results = search(s)
+def results(title):
+    results = search(title)
 
     return render_template('results.html',
                 results=results[0],
                 pagination=results[1],
                 menu=menu,
                 search_form=SearchForm(),
-                title=s,
+                title=title,
                 )
 
 
@@ -51,7 +51,8 @@ def best():
                             menu=menu,
                             title='Лучшие анекдоты',
                             search_form=SearchForm(),
-                            results=best,
+                            results=best[0],
+                            pagination=best[1],
                             )
 
 
