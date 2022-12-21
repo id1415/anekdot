@@ -18,6 +18,7 @@ def search(query):
         query = int(query)
         cur.execute("SELECT id, text, rating FROM anek where id=%s", query)
         posts = cur.fetchall()
+        # posts = Anek.query.filter_by(id=query).first()
 
     except ValueError:  # если запрос не переводится в int
 
@@ -35,6 +36,12 @@ def search(query):
             cur.execute(query_db, [i for i in query])
             posts = cur.fetchall()
 
+            # posts = []
+            # for i in range(len(tag)):
+            #     posts.append(Anek.text.like(tag[i]))
+
+            # posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc()).all()
+
         # если ; нет то поиск работает по прямому вхождению
         else:
             cur.execute('''SELECT id, text, rating 
@@ -42,6 +49,8 @@ def search(query):
                         ORDER BY id DESC''', 
                         ['%' + query + '%'])
             posts = cur.fetchall()
+
+            # posts = Anek.query.filter(Anek.text.like(query)).all()
     
     total = len(posts)  # количество найденных анекдотов
 
@@ -89,6 +98,7 @@ def len_base():
     cur = con.cursor()
     cur.execute("SELECT max(id) from anek")
     result = cur.fetchone()
+    # result = db.session.query(func.max(Anek.id)).first()
     return result[0]
 
 
@@ -97,6 +107,9 @@ def add_anekdot(new_anekdot):
     con = mysql.connect()
     cur = con.cursor()
     cur.execute("INSERT INTO anek (text) VALUES (%s)", (new_anekdot,))
+    # anekdot = Anek(text=new_anekdot)
+    # db.session.add(anekdot)
+    # db.session.commit()
     con.commit()
     return cur.lastrowid
 
@@ -107,6 +120,9 @@ def likes(id):
     cur = con.cursor()
     cur.execute("UPDATE anek SET rating = rating + 1 WHERE id = (%s)", (id,))
     con.commit()
+    # like = Anek.query.filter_by(id=id).first()
+    # like.rating += 1
+    # db.session.commit()
 
 
 # дизлайк
@@ -115,6 +131,9 @@ def dislikes(id):
     cur = con.cursor()
     cur.execute("UPDATE anek SET rating = rating - 1 WHERE id = (%s)", (id,))
     con.commit()
+    # dislike = Anek.query.filter_by(id=id).first()
+    # dislike.rating -= 1
+    # db.session.commit()
 
 
 # последние анекдоты
@@ -122,6 +141,7 @@ def last_anecdotes():
     con = mysql.connect()
     cur = con.cursor()
     cur.execute("SELECT * FROM anek ORDER BY id DESC LIMIT 100")
+    # last = Anek.query.order_by(id.desc()).limit(100).all()
     last = cur.fetchall()
 
     total = len(last)  # количество найденных анекдотов
@@ -149,6 +169,7 @@ def best_anecdotes():
     con = mysql.connect()
     cur = con.cursor()
     cur.execute("SELECT * FROM anek ORDER BY rating DESC LIMIT 100")
+    # best = Anek.query.order_by(rating.desc()).limit(100).all()
     best = cur.fetchall()
 
     total = len(best)  # количество найденных анекдотов
