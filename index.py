@@ -56,7 +56,7 @@ def best():
     results = best_anecdotes()
     results = results.paginate(page=page, per_page=10, error_out=True)
 
-    return render_template('results.html',
+    return render_template('best.html',
                             menu=menu,
                             title='Лучшие анекдоты',
                             search_form=SearchForm(),
@@ -78,7 +78,7 @@ def new():
     results = new_anecdotes()
     results = results.paginate(page=page, per_page=10, error_out=True)
 
-    return render_template('results.html',
+    return render_template('new.html',
                             menu=menu,
                             title='Новые анекдоты',
                             search_form=SearchForm(),
@@ -164,4 +164,4 @@ def add():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

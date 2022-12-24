@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func, and_, select
+from sqlalchemy.sql import func, and_
 
 load_dotenv()
 app = Flask(__name__)
@@ -63,7 +63,7 @@ def add_anekdot(new_anekdot):
     anekdot = Anek(text=new_anekdot)
     db.session.add(anekdot)
     db.session.commit()
-    return None
+    return anekdot.id
 
 
 # лайк
