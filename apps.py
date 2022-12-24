@@ -82,11 +82,11 @@ def dislikes(id):
 
 # новые анекдоты
 def new_anecdotes():
-    new = Anek.query.order_by(Anek.id.desc())
+    new = Anek.query.order_by(Anek.id.desc()).limit(100).from_self()
     return new
 
 
 # лучшие анекдоты
 def best_anecdotes():
-    best = Anek.query.order_by(Anek.rating.desc())
+    best = Anek.query.order_by(Anek.rating.desc()).limit(100).from_self()
     return best
