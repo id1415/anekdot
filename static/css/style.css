@@ -53,7 +53,9 @@ pre {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 20px;
     white-space: pre-wrap;
-    word-wrap: break-word;
+    
+    /* word-break: break-all; */
+    /* word-wrap: break-word; */
     margin: 0;
 }
 
@@ -81,20 +83,21 @@ pre {
 }
 
 .pagination {
-    margin: 10px 0;
-    margin-top: 0;
-    margin-bottom: 10;
+    text-align: center;
 }
 
-.pagination-page-info {
-    padding: .6em;
-    padding-top: 0px;
-    padding-bottom: 0;
-    padding-left: 0;
-    width: 40em;
-    margin: .5em;
-    margin-left: 0;
+.page-number {
+    padding-left: 5px;
+}
+
+.pagination-total {
     font-size: 18px;
+}
+
+.current-page-number {
+    color: red;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 30px;
 }
 
 .active {

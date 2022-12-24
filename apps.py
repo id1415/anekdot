@@ -1,24 +1,30 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask
-from flask_paginate import Pagination, get_page_args
-from flaskext.mysql import MySQL
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func, and_, select
 
+load_dotenv()
 app = Flask(__name__)
-mysql = MySQL()
-mysql.init_app(app)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+
+class Anek(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(2000), unique=True, nullable=False)
+    rating = db.Column(db.Integer, nullable=False, default=0)
+
+    def __repr__(self):
+        return f'[{self.id}, {self.text}, {self.rating}]'
 
 
 # поиск и пагинация результатов
 def search(query):
-
-    # соединение с базой данных
-    con = mysql.connect()
-    cur = con.cursor()
-
     try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
         query = int(query)
-        cur.execute("SELECT id, text, rating FROM anek where id=%s", query)
-        posts = cur.fetchall()
-        # posts = Anek.query.filter_by(id=query).first()
+        posts = Anek.query.filter(Anek.id == query)
 
     except ValueError:  # если запрос не переводится в int
 
@@ -26,167 +32,61 @@ def search(query):
         if ';' in query and query[0] != ';' and query[-1] != ';':
             query = query.split(';')
             query = [i.strip() for i in query]
-            
-            # составление SQL запроса
-            query_db = """SELECT id, text, rating FROM anek\nWHERE text RLIKE (%s)\n"""
-            for _ in range(len(query) - 1):
-                query_db += 'AND text RLIKE (%s)\n'
-            query_db += 'ORDER BY id DESC'
-            
-            cur.execute(query_db, [i for i in query])
-            posts = cur.fetchall()
 
-            # posts = []
-            # for i in range(len(tag)):
-            #     posts.append(Anek.text.like(tag[i]))
+            posts = []
+            for i in range(len(query)):
+                posts.append(Anek.text.like(f'%{query[i]}%'))
 
-            # posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc()).all()
+            posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc())
 
         # если ; нет то поиск работает по прямому вхождению
         else:
-            cur.execute('''SELECT id, text, rating 
-                        FROM anek WHERE text LIKE %s 
-                        ORDER BY id DESC''', 
-                        ['%' + query + '%'])
-            posts = cur.fetchall()
-
-            # posts = Anek.query.filter(Anek.text.like(query)).all()
+            posts = Anek.query.filter(Anek.text.ilike(f'%{query}%')).order_by(Anek.id.desc())
     
-    total = len(posts)  # количество найденных анекдотов
-
-    # page - номер страницы
-    # per_page - результатов на страницу
-    # offset = (page - 1) * per_page
-    page, per_page, offset = get_page_args(page_parameter='page',
-                                        per_page_parameter='per_page')
-    
-    posts = posts[offset: offset + 10]  # список из 10 анекдотов
-
-    pagination = Pagination(page=page,
-                            per_page=per_page,
-                            total=total,
-                            css_framework='Bootstrap3',
-                            display_msg=f'Найдено {total} анекдотов',
-                            )
-
-    return posts, pagination
+    return posts
 
 
 # вывод 10 случайных анекдотов на главную страницу
 def random_anekdot():
-
-    # соединение с базой данных
-    con = mysql.connect()
-    cur = con.cursor()
-
-    # SQL запросы
-    cur.execute("SELECT @min := MIN(id), @max := MAX(id) FROM anek")
-    cur.execute("""SELECT id, text, rating
-                FROM anek AS a 
-                JOIN ( SELECT FLOOR(@min + (@max - @min + 1) * RAND()) AS id 
-                FROM anek LIMIT 11) 
-                b USING (id)
-                LIMIT 10""")
-
-    anekdots = cur.fetchall()
-    return anekdots
+    lst = Anek.query.order_by(func.random()).limit(10).all()
+    return lst
 
 
 # функция выдаёт максимальный id = кол-во анекдотов в базе
 def len_base():
-    con = mysql.connect()
-    cur = con.cursor()
-    cur.execute("SELECT max(id) from anek")
-    result = cur.fetchone()
-    # result = db.session.query(func.max(Anek.id)).first()
+    result = db.session.query(func.max(Anek.id)).first()
     return result[0]
 
 
 # добавление анекдота в базу
 def add_anekdot(new_anekdot):
-    con = mysql.connect()
-    cur = con.cursor()
-    cur.execute("INSERT INTO anek (text) VALUES (%s)", (new_anekdot,))
-    # anekdot = Anek(text=new_anekdot)
-    # db.session.add(anekdot)
-    # db.session.commit()
-    con.commit()
-    return cur.lastrowid
+    anekdot = Anek(text=new_anekdot)
+    db.session.add(anekdot)
+    db.session.commit()
+    return None
 
 
 # лайк
 def likes(id):
-    con = mysql.connect()
-    cur = con.cursor()
-    cur.execute("UPDATE anek SET rating = rating + 1 WHERE id = (%s)", (id,))
-    con.commit()
-    # like = Anek.query.filter_by(id=id).first()
-    # like.rating += 1
-    # db.session.commit()
+    like = Anek.query.filter_by(id=id).first()
+    like.rating += 1
+    db.session.commit()
 
 
 # дизлайк
 def dislikes(id):
-    con = mysql.connect()
-    cur = con.cursor()
-    cur.execute("UPDATE anek SET rating = rating - 1 WHERE id = (%s)", (id,))
-    con.commit()
-    # dislike = Anek.query.filter_by(id=id).first()
-    # dislike.rating -= 1
-    # db.session.commit()
+    dislike = Anek.query.filter_by(id=id).first()
+    dislike.rating -= 1
+    db.session.commit()
 
 
-# последние анекдоты
-def last_anecdotes():
-    con = mysql.connect()
-    cur = con.cursor()
-    cur.execute("SELECT * FROM anek ORDER BY id DESC LIMIT 100")
-    # last = Anek.query.order_by(id.desc()).limit(100).all()
-    last = cur.fetchall()
-
-    total = len(last)  # количество найденных анекдотов
-
-    # page - номер страницы
-    # per_page - результатов на страницу
-    # offset = (page - 1) * per_page
-    page, per_page, offset = get_page_args(page_parameter='page',
-                                        per_page_parameter='per_page')
-    
-    last = last[offset: offset + 10]  # список из 10 анекдотов
-
-    pagination = Pagination(page=page,
-                            per_page=per_page,
-                            total=total,
-                            css_framework='Bootstrap3',
-                            display_msg=f'Найдено {total} анекдотов',
-                            )
-
-    return last, pagination
+# новые анекдоты
+def new_anecdotes():
+    new = Anek.query.order_by(Anek.id.desc())
+    return new
 
 
 # лучшие анекдоты
 def best_anecdotes():
-    con = mysql.connect()
-    cur = con.cursor()
-    cur.execute("SELECT * FROM anek ORDER BY rating DESC LIMIT 100")
-    # best = Anek.query.order_by(rating.desc()).limit(100).all()
-    best = cur.fetchall()
-
-    total = len(best)  # количество найденных анекдотов
-
-    # page - номер страницы
-    # per_page - результатов на страницу
-    # offset = (page - 1) * per_page
-    page, per_page, offset = get_page_args(page_parameter='page',
-                                        per_page_parameter='per_page')
-    
-    best = best[offset: offset + 10]  # список из 10 анекдотов
-
-    pagination = Pagination(page=page,
-                            per_page=per_page,
-                            total=total,
-                            css_framework='Bootstrap3',
-                            display_msg=f'Найдено {total} анекдотов',
-                            )
-
-    return best, pagination
+    best = Anek.query.order_by(Anek.rating.desc())
+    return best

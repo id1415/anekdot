@@ -1,18 +1,19 @@
+{% import 'macro.html' as macro %}
 {% extends 'base.html' %}
 
 {% block search %}
-    {{ pagination.info }}
-    {{ pagination.links }}
+    <div class="pagination-total">Найдено анекдотов: {{ results.total }}</div>
+    {{ macro.render_pagination(results) }}
 {% endblock %}
 
 {% block content %}
     {% for result in results %}
-        <pre><b>{{ result[0] }}  Рейтинг: {{ result[2] }}</b></pre>
-        <pre>{{ result[1] }}</pre>
+        <pre><b>{{ result.id }}  Рейтинг: {{ result.rating }}</b></pre>
+        <pre>{{ result.text }}</pre>
         <hr class="line0">
     {% endfor %}
 {% endblock %}
 
 {% block search1 %}
-    {{ pagination.links }}
+    {{ macro.render_pagination(results) }}
 {% endblock %}
