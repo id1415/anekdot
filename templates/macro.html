@@ -6,14 +6,20 @@
             </span>
         {% endif %}
 
-        {% for number in results.iter_pages(left_edge = 2, right_edge = 2, left_current = 2, right_current = 2) %}
-            {% if results.page != number %}
-                <span>
-                    <a class='page-number' href="{{ url_for('results', page=number) }}">{{ number }}</a>
-                </span>
-            {% else %}
-                <span class='current-page-number'>{{ number }}</span>
-            {% endif %}
+        {% for number in results.iter_pages(left_edge = 2, right_edge = 2, left_current = 2, right_current = 4) %}
+
+                {% if results.page != number %}
+                    {% if number != None %}
+                        <span>
+                            <a class='page-number' href="{{ url_for('results', page=number) }}">{{ number }}</a>
+                        </span>
+                    {% else %}
+                        <span>{{ '...' }}</span>
+                    {% endif %}
+                {% else %}
+                    <span class='current-page-number'>{{ number }}</span>
+                {% endif %}
+            
         {% endfor %}
 
         {% if results.has_next %}
@@ -34,9 +40,13 @@
 
     {% for number in results.iter_pages(left_edge = 2, right_edge = 2, left_current = 2, right_current = 2) %}
         {% if results.page != number %}
-            <span>
-                <a class='page-number' href="{{ url_for('best', page=number) }}">{{ number }}</a>
-            </span>
+            {% if number != None %}
+                <span>
+                    <a class='page-number' href="{{ url_for('results', page=number) }}">{{ number }}</a>
+                </span>
+            {% else %}
+                <span>{{ '...' }}</span>
+            {% endif %}
         {% else %}
             <span class='current-page-number'>{{ number }}</span>
         {% endif %}
@@ -60,9 +70,13 @@
 
     {% for number in results.iter_pages(left_edge = 2, right_edge = 2, left_current = 2, right_current = 2) %}
         {% if results.page != number %}
-            <span>
-                <a class='page-number' href="{{ url_for('new', page=number) }}">{{ number }}</a>
-            </span>
+            {% if number != None %}
+                <span>
+                    <a class='page-number' href="{{ url_for('results', page=number) }}">{{ number }}</a>
+                </span>
+            {% else %}
+                <span>{{ '...' }}</span>
+            {% endif %}
         {% else %}
             <span class='current-page-number'>{{ number }}</span>
         {% endif %}
