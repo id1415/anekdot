@@ -1,3 +1,6 @@
+<!-- в jinja я не особо шарю, поэтому тут находятся 3 абсолютно одинаковых функции -->
+<!-- разница только в названиях и url_for -->
+<!-- cами функции нужны для пагинации отдельных страниц - results, best и new -->
 {% macro pagination_results(results) %}
     <div class="pagination">
         {% if results.has_prev %}

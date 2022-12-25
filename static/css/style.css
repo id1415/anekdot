@@ -53,9 +53,6 @@ pre {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 20px;
     white-space: pre-wrap;
-    
-    /* word-break: break-all; */
-    /* word-wrap: break-word; */
     margin: 0;
 }
 
