@@ -42,7 +42,7 @@
         {% if results.page != number %}
             {% if number != None %}
                 <span>
-                    <a class='page-number' href="{{ url_for('results', page=number) }}">{{ number }}</a>
+                    <a class='page-number' href="{{ url_for('best', page=number) }}">{{ number }}</a>
                 </span>
             {% else %}
                 <span>{{ '...' }}</span>
@@ -72,7 +72,7 @@
         {% if results.page != number %}
             {% if number != None %}
                 <span>
-                    <a class='page-number' href="{{ url_for('results', page=number) }}">{{ number }}</a>
+                    <a class='page-number' href="{{ url_for('new', page=number) }}">{{ number }}</a>
                 </span>
             {% else %}
                 <span>{{ '...' }}</span>
