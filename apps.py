@@ -7,7 +7,7 @@ from sqlalchemy.sql import func, and_
 load_dotenv()
 app = Flask(__name__)
 # использую БД postgresql
-# мой доступ выглядит так: postgresql+psycopg2://username:password@host:port/mydatabase
+# app.config["SQLALCHEMY_DATABASE_URI"] = postgresql+psycopg2://username:password@host:port/mydatabase
 # https://docs.sqlalchemy.org/en/14/core/engines.html
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
