@@ -52,7 +52,7 @@ def best():
         exm.title = query
         return redirect(url_for('results'))
 
-    results = best_anecdotes()                    # функция выводит 100 анекдотов с наивысшими рейтингами
+    results = best_anecdotes()  # функция выводит 100 анекдотов с наивысшими рейтингами
     page = request.args.get('page', 1, type=int)
     results = results.paginate(page=page, per_page=10, error_out=True)
 
@@ -72,7 +72,7 @@ def new():
         exm.title = query
         return redirect(url_for('results'))
     
-    results = new_anecdotes()                     # функция выводит 100 последних анекдотов из базы данных
+    results = new_anecdotes()  # функция выводит 100 последних анекдотов из базы данных
     page = request.args.get('page', 1, type=int)
     results = results.paginate(page=page, per_page=10, error_out=True)
 
@@ -111,7 +111,7 @@ def index():
                             menu=menu,
                             title='Анекдоты',
                             search_form=SearchForm(),
-                            like_form=like_form,       # кнопки лайк/дизлайк
+                            like_form=like_form,  # кнопки лайк/дизлайк
                             anekdots=anekdots,
                             )
 
@@ -162,4 +162,4 @@ def add():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

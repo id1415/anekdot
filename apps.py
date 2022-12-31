@@ -1,6 +1,9 @@
+# этот модуль для работы с бд
+# https://docs.sqlalchemy.org/en/14/index.html
+
 import os
 from dotenv import load_dotenv
-from flask import Flask, request, redirect, url_for
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func, and_
 
@@ -23,7 +26,7 @@ class Anek(db.Model):
     def __repr__(self):
         return f'[{self.id}, {self.text}, {self.rating}]'
 
-class Search():
+class Search:
     title = ''  # сюда сохраняется пользовательский запрос в поиске
                 # и ещё переменная используется как заголовок для страницы с результатами
 
@@ -46,7 +49,7 @@ class Search():
                 posts = []
                 # здесь составляется sql запрос
                 for i in range(len(query)):
-                    posts.append(Anek.text.ilike(f'%{query[i]}%'))  # text LIKE '%query[i]%'
+                    posts.append(Anek.text.ilike(f'%{query[i]}%'))  # text ILIKE '%query[i]%'
 
                 # если в поиск ввести 'американец;немец;русский', то финальный sql запрос будет таким:
                 '''SELECT * FROM anek
@@ -62,7 +65,7 @@ class Search():
                 WHERE text ILIKE '%американец%
                 ORDER BY id DESC;'''
                 posts = Anek.query.filter(Anek.text.ilike(f'%{query}%')).order_by(Anek.id.desc())
-        
+
         return posts
 
 
@@ -97,6 +100,8 @@ def likes(id):
     '''SELECT * FROM anek
     WHERE id=12345;'''
     like = Anek.query.filter_by(id=id).first()
+    '''UPDATE anek SET rating = rating + 1
+    WHERE id = 12345;'''
     like.rating += 1  # цифра рейтинга увеличивается на 1
     db.session.commit()
 
@@ -106,6 +111,8 @@ def dislikes(id):
     '''SELECT * FROM anek
     WHERE id=12345;'''
     dislike = Anek.query.filter_by(id=id).first()
+    '''UPDATE anek SET rating = rating - 1
+    WHERE id = 12345;'''
     dislike.rating -= 1  # цифра рейтинга уменьшается на 1
     db.session.commit()
 
@@ -116,6 +123,7 @@ def new_anecdotes():
     ORDER BY id DESC
     LIMIT 100;'''
     # не знаю что такое from_self(), но без него пагинация не работает
+    # https://docs.sqlalchemy.org/en/14/orm/query.html#sqlalchemy.orm.Query.from_self
     new = Anek.query.order_by(Anek.id.desc()).limit(100).from_self()
     return new
 
@@ -125,6 +133,5 @@ def best_anecdotes():
     '''SELECT * FROM anek
     ORDER BY rating DESC
     LIMIT 100;'''
-    # не знаю что такое from_self(), но без него пагинация не работает
     best = Anek.query.order_by(Anek.rating.desc()).limit(100).from_self()
     return best
