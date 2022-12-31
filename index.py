@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 from flask import render_template, request, flash, redirect, url_for
-from apps import app, search, random_anekdot, len_base, add_anekdot, \
-                        likes, dislikes, new_anecdotes, best_anecdotes
+from apps import app, random_anekdot, len_base, add_anekdot, \
+                likes, dislikes, new_anecdotes, best_anecdotes, Search
 from forms import TextForm, SearchForm, LikeForm
 
 # переменные окружения
@@ -19,30 +19,26 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         {'name': 'О сайте', 'url': 'about'},
         ]
 
- # костыль для поиска, если пользователь вводит запрос в поиск, этот запрос сохраняется сюда
- # нужен для функции results() и для заголовка результатов поиска
-title = ''
+exm = Search()
 
 
 # результаты поиска
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
-    # строки ниже присутствуют для каждой страницы, чтобы поиск работал везде
-    # пока не знаю как избавиться от копипаста
-    query = request.args.get('search')            # получение данных из поля поиска
-    if query:                                     # если пользователь что-то ввёл в поиск
-        global title
-        title = query                             # глобальной переменной присваивается запрос из поиска
-        results = search(title)
-    else:
-        results = search(title)                   # костыль вставляется сюда
+    # следующие 4 строки копируются для каждой страницы чтобы поле поиска работало везде
+    query = request.args.get('search')  # получение данных из поля поиска
+    if query:                           # если пользователь что-то ввёл в поиск
+        exm.title = query               # переменной title присваивается пользовательский ввод
+        return redirect(url_for('results'))  # выполнение функции results()
+
+    results = Search.search(exm.title)  # поиск в БД
 
     page = request.args.get('page', 1, type=int)  # для пагинации
     results = results.paginate(page=page, per_page=10, error_out=True)  # пагинация
 
     return render_template('results.html',
                 menu=menu,                 # меню сайта
-                title=title,               # заголовок, совпадает с запросом пользователя в поиске
+                title=exm.title,           # заголовок страницы
                 search_form=SearchForm(),  # поле поиска
                 results=results,           # результаты поиска
                 )
@@ -51,55 +47,49 @@ def results():
 # Страница лучшие анекдоты
 @app.route('/best')
 def best():
-    # запрос в поле поиска
-    query = request.args.get('search')            # получение данных из поля поиска
-    if query:                                     # если пользователь что-то ввёл в поиск
-        global title
-        title = query                             # глобальной переменной присваивается запрос из поиска
+    query = request.args.get('search')
+    if query:
+        exm.title = query
         return redirect(url_for('results'))
 
     results = best_anecdotes()                    # функция выводит 100 анекдотов с наивысшими рейтингами
-    page = request.args.get('page', 1, type=int)  # для пагинации
-    results = results.paginate(page=page, per_page=10, error_out=True)  # пагинация 100 анекдотов
+    page = request.args.get('page', 1, type=int)
+    results = results.paginate(page=page, per_page=10, error_out=True)
 
     return render_template('best.html',
-                            menu=menu,                 # меню сайта
-                            title='Лучшие анекдоты',   # заголовок страницы
-                            search_form=SearchForm(),  # поле поиска
-                            results=results,           # результаты поиска
+                            menu=menu,
+                            title='Лучшие анекдоты',
+                            search_form=SearchForm(),
+                            results=results,
                             )
 
 
 # страница Новые анекдоты
 @app.route('/new')
 def new():
-    # запрос в поле поиска
-    query = request.args.get('search')            # получение данных из поля поиска
-    if query:                                     # если пользователь что-то ввёл в поиск
-        global title
-        title = query                             # глобальной переменной присваивается запрос из поиска
+    query = request.args.get('search')
+    if query:
+        exm.title = query
         return redirect(url_for('results'))
     
     results = new_anecdotes()                     # функция выводит 100 последних анекдотов из базы данных
-    page = request.args.get('page', 1, type=int)  # для пагинации
-    results = results.paginate(page=page, per_page=10, error_out=True)  # пагинация
+    page = request.args.get('page', 1, type=int)
+    results = results.paginate(page=page, per_page=10, error_out=True)
 
     return render_template('new.html',
-                            menu=menu,                 # меню сайта
-                            title='Новые анекдоты',    # заголовок страницы
-                            search_form=SearchForm(),  # поле поиска
-                            results=results,           # результаты поиска
+                            menu=menu,
+                            title='Новые анекдоты',
+                            search_form=SearchForm(),
+                            results=results,
                             )
 
 
 # главная страница
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # запрос в поле поиска
-    query = request.args.get('search')  # получение данных из поля поиска
-    if query:                           # если пользователь что-то ввёл в поиск
-        global title
-        title = query                   # глобальной переменной присваивается запрос из поиска
+    query = request.args.get('search')
+    if query:
+        exm.title = query
         return redirect(url_for('results'))
 
     # Лайк, дизлайк
@@ -111,47 +101,43 @@ def index():
 
         if like:               # если пользователь нажал на лайк
             likes(like)        # число рейтинга в БД увеличивается на 1
-        if dislike:            # или на дизлайк
+        if dislike:            # если пользователь нажал на дизлайк
             dislikes(dislike)  # число уменьшается на 1
 
     anekdots = random_anekdot()  # функция выводит 10 случайных анекдотов на страницу
 
     # всё, что находится внутри всех функций render_template, используется в jinja синтаксисе в html файлах
     return render_template('index.html',
-                            menu=menu,                 # меню сайта
-                            title='Анекдоты',          # заголовок страницы
-                            search_form=SearchForm(),  # поле поиска
+                            menu=menu,
+                            title='Анекдоты',
+                            search_form=SearchForm(),
                             like_form=like_form,       # кнопки лайк/дизлайк
-                            anekdots=anekdots,         # 10 случайных анекдотов
+                            anekdots=anekdots,
                             )
 
 
 # страница О САЙТЕ
 @app.route('/about')
 def about():
-    # запрос в поле поиска
-    query = request.args.get('search')  # получение данных из поля поиска
-    if query:                           # если пользователь что-то ввёл в поиск
-        global title
-        title = query                   # глобальной переменной присваивается запрос из поиска
+    query = request.args.get('search')
+    if query:
+        exm.title = query
         return redirect(url_for('results'))
 
     return render_template('about.html',
-                            menu=menu,                 # меню сайта
-                            title='О сайте',           # заголовок страницы
-                            search_form=SearchForm(),  # поле поиска
-                            raw=len_base(),            # количество анекдотов в базе
+                            menu=menu,
+                            title='О сайте',
+                            search_form=SearchForm(),
+                            raw=len_base(),
                             )
 
 
 # страница ДОБАВИТЬ АНЕКДОТ
 @app.route('/add', methods = ['GET', 'POST'])
 def add():
-    # запрос в поле поиска
-    query = request.args.get('search')  # получение данных из поля поиска
-    if query:                           # если пользователь что-то ввёл в поиск
-        global title
-        title = query                   # глобальной переменной присваивается запрос из поиска
+    query = request.args.get('search')
+    if query:
+        exm.title = query
         return redirect(url_for('results'))
     
     text_form = TextForm()                   # форма добавления анекдотов
@@ -161,19 +147,19 @@ def add():
         text_form = TextForm(formdata=None)  # очищение формы
                                              # форму надо очищать, иначе
                                              # отправлять текст можно будет бесконечное число раз,
-                                             # и капча всегда будет срабатывать
+                                             # капча этому не препятствует
         # флэш сообщение об успешной отправке
         flash(f'Анекдот добавлен, ему присвоен id - {id}', category='success')
     elif text_form.recaptcha.errors:  # если капча не сработала
         flash('Ошибка валидации!', category='error')
 
     return render_template('add.html',
-                            menu=menu,                 # меню сайта
-                            title='Добавить анекдот',  # заголовок страницы
-                            search_form=SearchForm(),  # поле поиска
-                            text_form=text_form,       # текстовое поле для добавления анекдота
+                            menu=menu,
+                            title='Добавить анекдот',
+                            search_form=SearchForm(),
+                            text_form=text_form,
                             )
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

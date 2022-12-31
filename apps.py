@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func, and_
 
@@ -23,43 +23,47 @@ class Anek(db.Model):
     def __repr__(self):
         return f'[{self.id}, {self.text}, {self.rating}]'
 
+class Search():
+    title = ''  # сюда сохраняется пользовательский запрос в поиске
+                # и ещё переменная используется как заголовок для страницы с результатами
 
-# поиск в БД
-def search(query):
-    try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
-        query = int(query)
-        '''SELECT * FROM anek 
-        WHERE id = 12345;'''
-        posts = Anek.query.filter(Anek.id == query)
+    # поиск в БД
+    @staticmethod
+    def search(query):
+        try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
+            query = int(query)
+            '''SELECT * FROM anek 
+            WHERE id = 12345;'''
+            posts = Anek.query.filter(Anek.id == query)
 
-    except ValueError:  # если запрос не переводится в int
+        except ValueError:  # если запрос не переводится в int
 
-        # если в запросе есть слова, разделённые ; то поиск работает по разбавочному вхождению
-        if ';' in query and query[0] != ';' and query[-1] != ';':
-            query = query.split(';')
-            query = [i.strip() for i in query]
+            # если в запросе есть слова, разделённые ; то поиск работает по разбавочному вхождению
+            if ';' in query and query[0] != ';' and query[-1] != ';':
+                query = query.split(';')
+                query = [i.strip() for i in query]
 
-            posts = []
-            # здесь составляется sql запрос
-            for i in range(len(query)):
-                posts.append(Anek.text.ilike(f'%{query[i]}%'))  # text LIKE '%query[i]%'
+                posts = []
+                # здесь составляется sql запрос
+                for i in range(len(query)):
+                    posts.append(Anek.text.ilike(f'%{query[i]}%'))  # text LIKE '%query[i]%'
 
-            # если в поиск ввести 'американец;немец;русский', то финальный sql запрос будет таким:
-            '''SELECT * FROM anek
-            WHERE text ILIKE '%американец%'
-            AND text ILIKE '%немец%'
-            AND text ILIKE '%русский%'
-            ORDER BY id DESC;'''
-            posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc())
+                # если в поиск ввести 'американец;немец;русский', то финальный sql запрос будет таким:
+                '''SELECT * FROM anek
+                WHERE text ILIKE '%американец%'
+                AND text ILIKE '%немец%'
+                AND text ILIKE '%русский%'
+                ORDER BY id DESC;'''
+                posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc())
 
-        # если ; нет то поиск работает по прямому вхождению
-        else:
-            '''SELECT * FROM anek
-            WHERE text ILIKE '%американец%
-            ORDER BY id DESC;'''
-            posts = Anek.query.filter(Anek.text.ilike(f'%{query}%')).order_by(Anek.id.desc())
-    
-    return posts
+            # если ; нет то поиск работает по прямому вхождению
+            else:
+                '''SELECT * FROM anek
+                WHERE text ILIKE '%американец%
+                ORDER BY id DESC;'''
+                posts = Anek.query.filter(Anek.text.ilike(f'%{query}%')).order_by(Anek.id.desc())
+        
+        return posts
 
 
 # вывод 10 случайных анекдотов на главную страницу

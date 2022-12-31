@@ -3,7 +3,7 @@
 {% block content %}
 
     <script>  // в список помещается id анекдотов
-        var lst = []
+        var lst = [];
     </script>
 
     {% for post in anekdots %}
@@ -24,58 +24,10 @@
 
     {% endfor %}
     
-    <script> // По нажатию лайка увеличивается цифра рейтинга
-        document.addEventListener('click', ({ target: t }) => {
-            if (t.classList.contains('like')) {
-                const index = [...document.querySelectorAll('.like')].indexOf(t);
-                const count = document.querySelectorAll('.rate')[index];
-                count.innerText -= -1;
-            }
-        });
-    </script>
-
-    <script> // По нажатию дизлайка уменьшается цифра рейтинга
-        document.addEventListener('click', ({ target: t }) => {
-            if (t.classList.contains('dislike')) {
-                const index = [...document.querySelectorAll('.dislike')].indexOf(t);
-                const count = document.querySelectorAll('.rate')[index];
-                count.innerText -= 1;
-            }
-        });
-    </script>
-
-    <script>  // в цикле классам like и dislike присваиваются id из списка lst
-    // знаю что на странице не должно быть элементов с одинаковым id, но пока так
-        for (var i = 0; i < 11; i++) {
-        document.getElementsByClassName("like")[i].id = lst[i];
-        document.getElementsByClassName("dislike")[i].id = lst[i];
-        }
-    </script>
-
-    <script>  // функция срабатывает по пользовательскому клику
-        $(".like").click(function () {
-            const elem = this.id;  // id элемента
-            $.ajax({
-                url:'/',
-                type:'POST',
-                data:{'like': elem, 'dislike': ''},  // эти данные передаются в index.index
-            });
-            
-            this.disabled=true;  // кнопка становится неактивной
-        })
-    </script>
-
-    <script>  // всё то же самое для дизлайка
-        $(".dislike").click(function () {
-            const elem = this.id;
-            $.ajax({
-                url:'/',
-                type:'POST',
-                data:{'like': '', 'dislike': elem},
-            });
-
-            this.disabled=true;
-        })
-    </script>
+    <script src="{{ url_for('static', filename='scripts/click_like.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/click_dislike.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/id.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/like.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/dislike.js') }}"></script>
 
 {% endblock %}
