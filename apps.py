@@ -32,7 +32,8 @@ class Search:
 
     # поиск в БД
     @staticmethod
-    def search(query):
+    def search():
+        query = Search.title
         try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
             query = int(query)
             '''SELECT * FROM anek 
@@ -87,8 +88,10 @@ def len_base():
 
 # добавление анекдота в базу
 def add_anekdot(new_anekdot):
-    # чтобы добавить анекдот в базу, достаточно прописать только text
-    # id, rating прописываются автоматически
+    # id прописывается автоматически, указывать его не нужно
+    # rating по умолчанию 0 и тоже не указывается в синтаксисе SQLAlchemy
+    # но, в моей бд, если составлять sql запрос, rating надо указывать
+    # INSERT INTO anek VALUES ('text', 0)
     anekdot = Anek(text=new_anekdot)
     db.session.add(anekdot)
     db.session.commit()
