@@ -30,7 +30,6 @@ def results():
         return redirect(url_for('results'))  # выполнение функции results()
 
     results = Search.search()  # поиск в БД
-    results = Search.search()  # поиск в БД
 
     page = request.args.get('page', 1, type=int)  # для пагинации
     results = results.paginate(page=page, per_page=10, error_out=True)  # пагинация
@@ -48,7 +47,6 @@ def results():
 def best():
     query = request.args.get('search')
     if query:
-        Search.title = query
         Search.title = query
         return redirect(url_for('results'))
 
@@ -70,7 +68,6 @@ def new():
     query = request.args.get('search')
     if query:
         Search.title = query
-        Search.title = query
         return redirect(url_for('results'))
     
     results = new_anecdotes()  # функция выводит 100 последних анекдотов из базы данных
@@ -90,7 +87,6 @@ def new():
 def index():
     query = request.args.get('search')
     if query:
-        Search.title = query
         Search.title = query
         return redirect(url_for('results'))
 
@@ -124,7 +120,6 @@ def about():
     query = request.args.get('search')
     if query:
         Search.title = query
-        Search.title = query
         return redirect(url_for('results'))
 
     return render_template('about.html',
@@ -140,7 +135,6 @@ def about():
 def add():
     query = request.args.get('search')
     if query:
-        Search.title = query
         Search.title = query
         return redirect(url_for('results'))
     
