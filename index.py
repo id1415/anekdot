@@ -26,8 +26,7 @@ def results():
     # следующие строки копируются для каждой страницы чтобы поле поиска работало везде
     query = request.args.get('search')       # получение данных из поля поиска
     if query:                                # если пользователь что-то ввёл в поиск
-        exm = Search(query)
-        # exm.title = query                    # переменной title присваивается пользовательский ввод
+        exm = Search(query)                  # экземпляр класса
         exm.add_query_to_db()                # добавление запроса в БД
         return redirect(url_for('results'))  # выполнение функции results()
     

@@ -50,7 +50,7 @@ class Search:
     # добавление поискового запроса в БД
     # если запрос хранить в переменной, то в проде она почему-то сбрасывается на None
     # и начинаются проблемы с навигацией по страницам
-    def add_query_to_db(self):   
+    def add_query_to_db(self):
         query = Query.query.filter(Query.id == 1).first()
         query.text = self.title
         db.session.commit()
