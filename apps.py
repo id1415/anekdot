@@ -27,6 +27,7 @@ class Anek(db.Model):
         return f'[{self.id}, {self.text}, {self.rating}]'
 
 
+# в этой таблице хранится последний поисковый запрос
 class Query(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(50), nullable=False)
@@ -34,31 +35,30 @@ class Query(db.Model):
     def __repr__(self):
         return f'[{self.id}, {self.text}]'
 
-class Search:
-    # если перейти на страницу results, то будут выведены анекдоты со словом none
-    # либо будут анекдоты с последним поисковым запросом
-    def __init__(self, title='None'):
-        self._title = title
 
-    @property
-    def title(self):
-        return self._title
-    
-    @title.setter
-    def title(self, value):
-        self._title = value
+class Search:
+    # если перейти на страницу results, то будут выведены анекдоты с последним поисковым запросом
+    def __init__(self, title):
+        self.title = title
+
+    # получение последнего поискового запроса из БД
+    @staticmethod
+    def title_get():
+        query = Query.query.filter(Query.id == 1).first()
+        return query.text
 
     # добавление поискового запроса в БД
     # если запрос сохранять в переменную, то в проде она почему-то сбрасывается
-    # и начинаются проблемы с навигацией по страницам с результатами поиска
-    # def add_query_to_db(self):   
-    #     query = Query.query.filter(Query.id == 1).first()
-    #     query.text = self.title
-    #     db.session.commit()
+    # и начинаются проблемы с навигацией по страницам
+    def add_query_to_db(self):   
+        query = Query.query.filter(Query.id == 1).first()
+        query.text = self.title
+        db.session.commit()
 
     # поиск в БД
-    def search(self):
-        query = self.title
+    @staticmethod
+    def search():
+        query = Search.title_get()
         try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
             query = int(query)
             '''SELECT * FROM anek 
