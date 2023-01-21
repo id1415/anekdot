@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Length
 # форма добавления анекдотов и капча
 # минимальная длина текста - 10 символов, максимальная - 1000
 class TextForm(FlaskForm):
-    text = TextAreaField(validators=[DataRequired(), Length(min=10, max=1000)])
+    text = TextAreaField(validators=[DataRequired(), Length(min=10, max=2000)])
     recaptcha = RecaptchaField()
 
 # форма поиска
