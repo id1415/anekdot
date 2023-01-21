@@ -9,7 +9,7 @@ from sqlalchemy.sql import func, and_
 
 load_dotenv()
 app = Flask(__name__)
-# использую БД postgresql
+# используется БД postgresql
 # app.config["SQLALCHEMY_DATABASE_URI"] = postgresql+psycopg2://username:password@host:port/mydatabase
 # https://docs.sqlalchemy.org/en/14/core/engines.html
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('SQLALCHEMY_DATABASE_URI')
@@ -48,7 +48,7 @@ class Search:
         return query.text
 
     # добавление поискового запроса в БД
-    # если запрос сохранять в переменную, то в проде она почему-то сбрасывается
+    # если запрос хранить в переменной, то в проде она почему-то сбрасывается на None
     # и начинаются проблемы с навигацией по страницам
     def add_query_to_db(self):   
         query = Query.query.filter(Query.id == 1).first()
@@ -59,14 +59,15 @@ class Search:
     @staticmethod
     def search():
         query = Search.title_get()
-        try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
+
+        # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
+        if query.isdigit():
             query = int(query)
             '''SELECT * FROM anek 
             WHERE id = 12345;'''
             posts = Anek.query.filter(Anek.id == query)
 
-        except ValueError:  # если запрос не переводится в int
-
+        else:  # если запрос не переводится в int
             # если в запросе есть слова, разделённые ; то поиск работает по разбавочному вхождению
             if ';' in query and query[0] != ';' and query[-1] != ';':
                 query = query.split(';')
@@ -115,7 +116,7 @@ def len_base():
 def add_anekdot(new_anekdot):
     # id прописывается автоматически, указывать его не нужно
     # rating по умолчанию 0 и тоже не указывается в синтаксисе SQLAlchemy
-    # но, в моей бд, если составлять sql запрос, rating надо указывать
+    # но если составлять sql запрос, то rating нужно указывать
     # INSERT INTO anek VALUES ('text', 0)
     anekdot = Anek(text=new_anekdot)
     db.session.add(anekdot)
