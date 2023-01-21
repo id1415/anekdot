@@ -17,7 +17,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
-# В БД одна таблица и три столбца (id, text, rating)
+# в таблице три столбца (id, text, rating)
 class Anek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(2000), unique=True, nullable=False)
@@ -26,25 +26,32 @@ class Anek(db.Model):
     def __repr__(self):
         return f'[{self.id}, {self.text}, {self.rating}]'
 
+
+class Query(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f'[{self.id}, {self.text}]'
+
 class Search:
     # если перейти на страницу results, то будут выведены анекдоты со словом none
     # либо будут анекдоты с последним поисковым запросом
-    def __init__(self, title='None'):
-        self._title = title
+    title = 'None'
 
-    # для чтения заголовка
-    @property
-    def title(self):
-        return self._title
-
-    # для записи нового заголовка
-    @title.setter
-    def title(self, value):
-        self._title = value
+    # добавление поискового запроса в БД
+    # если запрос сохранять в переменную, то в проде она почему-то сбрасывается
+    # и начинаются проблемы с навигацией по страницам с результатами поиска
+    @staticmethod
+    def add_query_to_db():   
+        query = Query.query.filter(Query.id == 1).first()
+        query.text = Search.title
+        db.session.commit()
 
     # поиск в БД
-    def search(self):
-        query = self.title
+    @staticmethod
+    def search():
+        query = Search.title
         try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
             query = int(query)
             '''SELECT * FROM anek 

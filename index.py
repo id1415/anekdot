@@ -18,7 +18,6 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         {'name': 'Добавить анекдот', 'url': 'add'},
         {'name': 'О сайте', 'url': 'about'},
         ]
-exm = Search()  # экземпляр класса
 
 
 # результаты поиска
@@ -27,17 +26,18 @@ def results():
     # следующие строки копируются для каждой страницы чтобы поле поиска работало везде
     query = request.args.get('search')       # получение данных из поля поиска
     if query:                                # если пользователь что-то ввёл в поиск
-        exm.title = query                    # переменной title присваивается пользовательский ввод
+        Search.title = query                 # переменной title присваивается пользовательский ввод
+        Search.add_query_to_db()             # добавление запроса в БД
         return redirect(url_for('results'))  # выполнение функции results()
 
-    results = exm.search()  # поиск в БД
+    results = Search.search()  # поиск в БД
 
     page = request.args.get('page', 1, type=int)  # для пагинации
     results = results.paginate(page=page, per_page=10, error_out=True)  # пагинация
 
     return render_template('results.html',
                 menu=menu,                 # меню сайта
-                title=exm.title,           # заголовок страницы
+                title=Search.title,        # заголовок страницы
                 search_form=SearchForm(),  # поле поиска
                 results=results,           # результаты поиска
                 )
@@ -48,7 +48,8 @@ def results():
 def best():
     query = request.args.get('search')
     if query:
-        exm.title = query
+        Search.title = query
+        Search.add_query_to_db()
         return redirect(url_for('results'))
 
     results = best_anecdotes()  # функция выводит 100 анекдотов с наивысшими рейтингами
@@ -68,7 +69,8 @@ def best():
 def new():
     query = request.args.get('search')
     if query:
-        exm.title = query
+        Search.title = query
+        Search.add_query_to_db()
         return redirect(url_for('results'))
     
     results = new_anecdotes()  # функция выводит 100 последних анекдотов из базы данных
@@ -88,7 +90,8 @@ def new():
 def index():
     query = request.args.get('search')
     if query:
-        exm.title = query
+        Search.title = query
+        Search.add_query_to_db()
         return redirect(url_for('results'))
 
     # Лайк, дизлайк
@@ -120,7 +123,8 @@ def index():
 def about():
     query = request.args.get('search')
     if query:
-        exm.title = query
+        Search.title = query
+        Search.add_query_to_db()
         return redirect(url_for('results'))
 
     return render_template('about.html',
@@ -136,7 +140,8 @@ def about():
 def add():
     query = request.args.get('search')
     if query:
-        exm.title = query
+        Search.title = query
+        Search.add_query_to_db()
         return redirect(url_for('results'))
     
     text_form = TextForm()                   # форма добавления анекдотов
