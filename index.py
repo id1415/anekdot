@@ -37,7 +37,7 @@ def results():
 
     return render_template('results.html',
                 menu=menu,                 # меню сайта
-                title=Search.title_get(),        # заголовок страницы
+                title=Search.title_get(),  # заголовок страницы
                 search_form=SearchForm(),  # поле поиска
                 results=results,           # результаты поиска
                 )
@@ -71,7 +71,6 @@ def new():
     query = request.args.get('search')
     if query:
         exm = Search(query)
-        # exm.title = query
         exm.add_query_to_db()
         return redirect(url_for('results'))
     
@@ -93,7 +92,6 @@ def index():
     query = request.args.get('search')
     if query:
         exm = Search(query)
-        # exm.title = query
         exm.add_query_to_db()
         return redirect(url_for('results'))
 
@@ -127,7 +125,6 @@ def about():
     query = request.args.get('search')
     if query:
         exm = Search(query)
-        # exm.title = query
         exm.add_query_to_db()
         return redirect(url_for('results'))
 
@@ -145,7 +142,6 @@ def add():
     query = request.args.get('search')
     if query:
         exm = Search(query)
-        # exm.title = query
         exm.add_query_to_db()
         return redirect(url_for('results'))
     
@@ -154,8 +150,8 @@ def add():
         new_anekdot = text_form.text.data    # текст из формы
         id = add_anekdot(new_anekdot)        # добавление в базу, функция возвращает id нового анекдота
         text_form = TextForm(formdata=None)  # очищение формы
-                                             # форму надо очищать, иначе
-                                             # отправлять текст можно будет бесконечное число раз,
+                                             # если не очищать форму, то
+                                             # отправлять текст можно будет много раз,
                                              # капча этому не препятствует
         # флэш сообщение об успешной отправке
         flash(f'Анекдот добавлен, ему присвоен id - {id}', category='success')

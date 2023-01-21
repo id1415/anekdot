@@ -41,12 +41,6 @@ class Search:
     def __init__(self, title):
         self.title = title
 
-    # получение последнего поискового запроса из БД
-    @staticmethod
-    def title_get():
-        query = Query.query.filter(Query.id == 1).first()
-        return query.text
-
     # добавление поискового запроса в БД
     # если запрос хранить в переменной, то в проде она почему-то сбрасывается на None
     # и начинаются проблемы с навигацией по страницам
@@ -55,12 +49,18 @@ class Search:
         query.text = self.title
         db.session.commit()
 
+    # получение последнего поискового запроса из БД
+    @staticmethod
+    def title_get():
+        query = Query.query.filter(Query.id == 1).first()
+        return query.text
+
     # поиск в БД
     @staticmethod
     def search():
         query = Search.title_get()
 
-        # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
+        # если запрос в поиске - число, то выводится анекдот с id = число
         if query.isdigit():
             query = int(query)
             '''SELECT * FROM anek 
