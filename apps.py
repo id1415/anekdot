@@ -27,13 +27,24 @@ class Anek(db.Model):
         return f'[{self.id}, {self.text}, {self.rating}]'
 
 class Search:
-    title = ''  # сюда сохраняется пользовательский запрос в поиске
-                # и ещё переменная используется как заголовок для страницы с результатами
+    # если перейти на страницу results, то будут выведены анекдоты со словом none
+    # либо будут анекдоты с последним поисковым запросом
+    def __init__(self, title='None'):
+        self._title = title
+
+    # для чтения заголовка
+    @property
+    def title(self):
+        return self._title
+
+    # для записи нового заголовка
+    @title.setter
+    def title(self, value):
+        self._title = value
 
     # поиск в БД
-    @staticmethod
-    def search():
-        query = Search.title
+    def search(self):
+        query = self.title
         try:  # если запрос в поиске можно перевести в int, то выводится анекдот с id = int
             query = int(query)
             '''SELECT * FROM anek 
