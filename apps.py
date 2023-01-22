@@ -51,14 +51,14 @@ class Search:
 
     # получение последнего поискового запроса из БД
     @staticmethod
-    def title_get():
+    def get_query():
         query = Query.query.filter(Query.id == 1).first()
         return query.text
 
     # поиск в БД
     @staticmethod
     def search():
-        query = Search.title_get()
+        query = Search.get_query()
 
         # если запрос в поиске - число, то выводится анекдот с id = число
         if query.isdigit():
@@ -109,7 +109,7 @@ def random_anekdot():
 def len_base():
     # SELECT max(id) FROM anek;
     result = db.session.query(func.max(Anek.id)).first()
-    return result[0]  # на выходе кортеж типа (12345,) поэтому [0]
+    return result[0]  # на выходе кортеж типа (12345,) поэтому нулевой индекс
 
 
 # добавление анекдота в базу
@@ -131,7 +131,7 @@ def likes(id):
     like = Anek.query.filter_by(id=id).first()
     '''UPDATE anek SET rating = rating + 1
     WHERE id = 12345;'''
-    like.rating += 1  # цифра рейтинга увеличивается на 1
+    like.rating += 1  # число рейтинга увеличивается на 1
     db.session.commit()
 
 
@@ -142,7 +142,7 @@ def dislikes(id):
     dislike = Anek.query.filter_by(id=id).first()
     '''UPDATE anek SET rating = rating - 1
     WHERE id = 12345;'''
-    dislike.rating -= 1  # цифра рейтинга уменьшается на 1
+    dislike.rating -= 1  # число рейтинга уменьшается на 1
     db.session.commit()
 
 
