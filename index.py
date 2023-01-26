@@ -20,7 +20,7 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         ]
 
 
-# функция сохраняет запрос в поиске в куки
+# функция сохраняет запрос из поиска в куки
 def if_query(query):
     resp = make_response(redirect(url_for('results')))
     resp.set_cookie('query', query)
@@ -97,7 +97,7 @@ def index():
     # Лайк, дизлайк
     like_form = LikeForm()
     if request.method == 'POST':
-        # здесь принимаются данные из JS кода, который находится в index.html
+        # здесь принимаются данные из JS кода, like.js, dislike.js
         like = request.form['like']
         dislike = request.form['dislike']
 
