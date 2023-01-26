@@ -27,73 +27,41 @@ class Anek(db.Model):
         return f'[{self.id}, {self.text}, {self.rating}]'
 
 
-# в этой таблице хранится последний поисковый запрос
-class Query(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(50), nullable=False)
+def search(query):
+    # если запрос в поиске - число, то выводится анекдот с id = число
+    if query.isdigit():
+        query = int(query)
+        '''SELECT * FROM anek 
+        WHERE id = 12345;'''
+        posts = Anek.query.filter(Anek.id == query)
 
-    def __repr__(self):
-        return f'[{self.id}, {self.text}]'
+    else:  # если запрос не переводится в int
+        # если в запросе есть слова, разделённые ; то поиск работает по разбавочному вхождению
+        if ';' in query and query[0] != ';' and query[-1] != ';':
+            query = query.split(';')
+            query = [i.strip() for i in query]
 
+            posts = []
+            # здесь составляется sql запрос
+            for i in range(len(query)):
+                posts.append(Anek.text.ilike(f'%{query[i]}%'))  # text ILIKE '%query[i]%'
 
-class Search:
-    # если перейти на страницу results, то будут выведены анекдоты с последним поисковым запросом
-    def __init__(self, title):
-        self.title = title
+            # если в поиск ввести 'американец;немец;русский', то финальный sql запрос будет таким:
+            '''SELECT * FROM anek
+            WHERE text ILIKE '%американец%'
+            AND text ILIKE '%немец%'
+            AND text ILIKE '%русский%'
+            ORDER BY id DESC;'''
+            posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc())
 
-    # добавление поискового запроса в БД
-    # если запрос хранить в переменной, то в проде она почему-то сбрасывается на None
-    # и начинаются проблемы с навигацией по страницам
-    def add_query_to_db(self):
-        query = Query.query.filter(Query.id == 1).first()
-        query.text = self.title
-        db.session.commit()
+        # если ; нет то поиск работает по прямому вхождению
+        else:
+            '''SELECT * FROM anek
+            WHERE text ILIKE '%американец%
+            ORDER BY id DESC;'''
+            posts = Anek.query.filter(Anek.text.ilike(f'%{query}%')).order_by(Anek.id.desc())
 
-    # получение последнего поискового запроса из БД
-    @staticmethod
-    def get_query():
-        query = Query.query.filter(Query.id == 1).first()
-        return query.text
-
-    # поиск в БД
-    @staticmethod
-    def search():
-        query = Search.get_query()
-
-        # если запрос в поиске - число, то выводится анекдот с id = число
-        if query.isdigit():
-            query = int(query)
-            '''SELECT * FROM anek 
-            WHERE id = 12345;'''
-            posts = Anek.query.filter(Anek.id == query)
-
-        else:  # если запрос не переводится в int
-            # если в запросе есть слова, разделённые ; то поиск работает по разбавочному вхождению
-            if ';' in query and query[0] != ';' and query[-1] != ';':
-                query = query.split(';')
-                query = [i.strip() for i in query]
-
-                posts = []
-                # здесь составляется sql запрос
-                for i in range(len(query)):
-                    posts.append(Anek.text.ilike(f'%{query[i]}%'))  # text ILIKE '%query[i]%'
-
-                # если в поиск ввести 'американец;немец;русский', то финальный sql запрос будет таким:
-                '''SELECT * FROM anek
-                WHERE text ILIKE '%американец%'
-                AND text ILIKE '%немец%'
-                AND text ILIKE '%русский%'
-                ORDER BY id DESC;'''
-                posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc())
-
-            # если ; нет то поиск работает по прямому вхождению
-            else:
-                '''SELECT * FROM anek
-                WHERE text ILIKE '%американец%
-                ORDER BY id DESC;'''
-                posts = Anek.query.filter(Anek.text.ilike(f'%{query}%')).order_by(Anek.id.desc())
-
-        return posts
+    return posts
 
 
 # вывод 10 случайных анекдотов на главную страницу

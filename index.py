@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, make_response
 from apps import app, random_anekdot, len_base, add_anekdot, \
-                likes, dislikes, new_anecdotes, best_anecdotes, Search
+                likes, dislikes, new_anecdotes, best_anecdotes, search
 from forms import TextForm, SearchForm, LikeForm
 
 # переменные окружения
@@ -20,28 +20,30 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         ]
 
 
+# функция сохраняет запрос в поиске в куки
 def if_query(query):
-    exm = Search(query)                  # экземпляр класса
-    exm.add_query_to_db()                # добавление запроса в БД
-    return redirect(url_for('results'))  # выполнение функции results()
+    resp = make_response(redirect(url_for('results')))
+    resp.set_cookie('query', query)
+    return resp
 
 
 # результаты поиска
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
     # следующие строки копируются для каждой страницы чтобы поле поиска работало везде
-    query = request.args.get('search')       # получение данных из поля поиска
-    if query:                                # если пользователь что-то ввёл в поиск
+    query = request.args.get('search')  # получение данных из поля поиска
+    if query:                           # если пользователь что-то ввёл в поиск
         return if_query(query)
     
-    results = Search.search()  # поиск в БД
+    query_from_cookie = request.cookies.get('query')  # получение строки из куки
+    results = search(query_from_cookie)               # поиск в БД
 
-    page = request.args.get('page', 1, type=int)  # для пагинации
+    page = request.args.get('page', 1, type=int)                        # для пагинации
     results = results.paginate(page=page, per_page=10, error_out=True)  # пагинация
 
     return render_template('results.html',
                 menu=menu,                 # меню сайта
-                title=Search.get_query(),  # заголовок страницы
+                title=query_from_cookie,   # заголовок страницы
                 search_form=SearchForm(),  # поле поиска
                 results=results,           # результаты поиска
                 )
@@ -84,6 +86,13 @@ def new():
                             results=results,
                             )
 
+
+@app.route('/setcookie')
+def setcookie():
+    dh = request.cookies.get('query')
+    print(dh)
+    return f'asadasd {dh}'
+ 
 
 # главная страница
 @app.route('/', methods=['GET', 'POST'])
@@ -160,4 +169,4 @@ def add():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
