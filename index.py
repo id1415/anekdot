@@ -85,13 +85,6 @@ def new():
                             search_form=SearchForm(),
                             results=results,
                             )
-
-
-@app.route('/setcookie')
-def setcookie():
-    dh = request.cookies.get('query')
-    print(dh)
-    return f'asadasd {dh}'
  
 
 # главная страница
@@ -169,4 +162,4 @@ def add():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
