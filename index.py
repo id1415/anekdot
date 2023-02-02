@@ -21,9 +21,11 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
 
 
 # функция сохраняет запрос из поиска в куки
+# если запрос хранить в переменной, то, во время перелистывания страниц,
+# в проде переменная сбрасывается на пустую строку, хотя на localhost всё работает нормально
 def if_query(query):
     resp = make_response(redirect(url_for('results')))
-    resp.set_cookie('query', query)
+    resp.set_cookie('query', query, httponly=True)
     return resp
 
 
@@ -33,7 +35,7 @@ def results():
     # следующие строки копируются для каждой страницы чтобы поле поиска работало везде
     query = request.args.get('search')  # получение данных из поля поиска
     if query:                           # если пользователь что-то ввёл в поиск
-        return if_query(query)
+        return if_query(query)          # сохранение поискового запроса в куки
     
     query_from_cookie = request.cookies.get('query')  # получение строки из куки
     results = search(query_from_cookie)               # поиск в БД
@@ -41,6 +43,8 @@ def results():
     page = request.args.get('page', 1, type=int)                        # для пагинации
     results = results.paginate(page=page, per_page=10, error_out=True)  # пагинация
 
+    # всё, что находится внутри функций render_template, 
+    # используется в jinja синтаксисе в html файлах
     return render_template('results.html',
                 menu=menu,                 # меню сайта
                 title=query_from_cookie,   # заголовок страницы
@@ -108,7 +112,6 @@ def index():
 
     anekdots = random_anekdot()  # функция выводит 10 случайных анекдотов на страницу
 
-    # всё, что находится внутри всех функций render_template, используется в jinja синтаксисе в html файлах
     return render_template('index.html',
                             menu=menu,
                             title='Анекдоты',
@@ -146,7 +149,7 @@ def add():
         id = add_anekdot(new_anekdot)        # добавление в базу, функция возвращает id нового анекдота
         text_form = TextForm(formdata=None)  # очищение формы
                                              # если не очищать форму, то
-                                             # отправлять текст можно будет много раз,
+                                             # отправлять текст можно будет бесконечно
                                              # капча этому не препятствует
         # флэш сообщение об успешной отправке
         flash(f'Анекдот добавлен, ему присвоен id - {id}', category='success')

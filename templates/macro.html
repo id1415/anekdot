@@ -1,11 +1,8 @@
-<!-- тут находятся 3 абсолютно одинаковых функции -->
-<!-- разница только в названиях и url_for -->
-<!-- cами функции нужны для пагинации отдельных страниц - results, best и new -->
-{% macro pagination_results(results) %}
+{% macro pagination_results(results, page_name) %}
     <div class="pagination">
         {% if results.has_prev %}
             <span>
-                <a class='page-number' href="{{ url_for('results', page=results.prev_num) }}">{{ '<<<' }}</a>
+                <a class='page-number' href="{{ url_for(page_name, page=results.prev_num) }}">{{ '<<<' }}</a>
             </span>
         {% endif %}
 
@@ -14,7 +11,7 @@
                 {% if results.page != number %}
                     {% if number != None %}
                         <span>
-                            <a class='page-number' href="{{ url_for('results', page=number) }}">{{ number }}</a>
+                            <a class='page-number' href="{{ url_for(page_name, page=number) }}">{{ number }}</a>
                         </span>
                     {% else %}
                         <span>{{ '...' }}</span>
@@ -27,68 +24,8 @@
 
         {% if results.has_next %}
             <span>
-                <a class='page-number' href="{{ url_for('results', page=results.next_num) }}">{{ '>>>' }}</a>
+                <a class='page-number' href="{{ url_for(page_name, page=results.next_num) }}">{{ '>>>' }}</a>
             </span>
         {% endif %}
     </div>
-{% endmacro %}
-
-{% macro pagination_best(results) %}
-<div class="pagination">
-    {% if results.has_prev %}
-        <span>
-            <a class='page-number' href="{{ url_for('best', page=results.prev_num) }}">{{ '<<<' }}</a>
-        </span>
-    {% endif %}
-
-    {% for number in results.iter_pages(left_edge = 2, right_edge = 2, left_current = 2, right_current = 2) %}
-        {% if results.page != number %}
-            {% if number != None %}
-                <span>
-                    <a class='page-number' href="{{ url_for('best', page=number) }}">{{ number }}</a>
-                </span>
-            {% else %}
-                <span>{{ '...' }}</span>
-            {% endif %}
-        {% else %}
-            <span class='current-page-number'>{{ number }}</span>
-        {% endif %}
-    {% endfor %}
-
-    {% if results.has_next %}
-        <span>
-            <a class='page-number' href="{{ url_for('best', page=results.next_num) }}">{{ '>>>' }}</a>
-        </span>
-    {% endif %}
-</div>
-{% endmacro %}
-
-{% macro pagination_new(results) %}
-<div class="pagination">
-    {% if results.has_prev %}
-        <span>
-            <a class='page-number' href="{{ url_for('new', page=results.prev_num) }}">{{ '<<<' }}</a>
-        </span>
-    {% endif %}
-
-    {% for number in results.iter_pages(left_edge = 2, right_edge = 2, left_current = 2, right_current = 2) %}
-        {% if results.page != number %}
-            {% if number != None %}
-                <span>
-                    <a class='page-number' href="{{ url_for('new', page=number) }}">{{ number }}</a>
-                </span>
-            {% else %}
-                <span>{{ '...' }}</span>
-            {% endif %}
-        {% else %}
-            <span class='current-page-number'>{{ number }}</span>
-        {% endif %}
-    {% endfor %}
-
-    {% if results.has_next %}
-        <span>
-            <a class='page-number' href="{{ url_for('new', page=results.next_num) }}">{{ '>>>' }}</a>
-        </span>
-    {% endif %}
-</div>
 {% endmacro %}

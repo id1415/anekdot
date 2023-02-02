@@ -3,7 +3,7 @@
 
 {% block search %}
     <div class="pagination-total">Найдено анекдотов: {{ results.total }}</div>
-    {{ macro.pagination_results(results) }}
+    {{ macro.pagination_results(results, 'results') }}
 {% endblock %}
 
 {% block content %}
@@ -15,5 +15,5 @@
 {% endblock %}
 
 {% block search1 %}
-    {{ macro.pagination_results(results) }}
+    {{ macro.pagination_results(results, 'results') }}
 {% endblock %}
