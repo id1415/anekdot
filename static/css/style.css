@@ -28,10 +28,6 @@ a:hover {
     color: red;
 }
 
-.lli {
-    margin-left: 20px;
-}
-
 li {
     display: inline;
     margin-right: 20px;
@@ -95,19 +91,6 @@ pre {
     color: red;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 30px;
-}
-
-.active {
-    text-decoration: underline;
-}
-
-.niz {
-    display: contents;
-}
-
-.code {
-    color: black;
-    text-decoration: underline;
 }
 
 h1 {

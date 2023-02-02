@@ -1,4 +1,4 @@
-# этот модуль для работы с бд
+# this module is for work with the database
 # https://docs.sqlalchemy.org/en/14/index.html
 
 import os
@@ -9,7 +9,7 @@ from sqlalchemy.sql import func, and_
 
 load_dotenv()
 app = Flask(__name__)
-# используется БД postgresql
+# postgresql database is used here
 # app.config["SQLALCHEMY_DATABASE_URI"] = postgresql+psycopg2://username:password@host:port/mydatabase
 # https://docs.sqlalchemy.org/en/14/core/engines.html
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('SQLALCHEMY_DATABASE_URI')
@@ -17,7 +17,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
-# в таблице три столбца (id, text, rating)
+# there are three columns in the table (id, text, rating)
 class Anek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(2000), unique=True, nullable=False)
@@ -28,43 +28,45 @@ class Anek(db.Model):
 
 
 def search(query):
-    # если запрос в поиске - число, то выводится анекдот с id = число
+    # if the search query is a number, then id=number is output
     if query.isdigit():
         query = int(query)
         '''SELECT * FROM anek 
         WHERE id = 12345;'''
         posts = Anek.query.filter(Anek.id == query)
 
-    else:  # если запрос не переводится в int
-        # если в запросе есть слова, разделённые ; то поиск работает по разбавочному вхождению
+    else:  # if the query is not a number
+        # if there are words separated ; then the search works by a split occurrence
         if ';' in query and query[0] != ';' and query[-1] != ';':
             query = query.split(';')
             query = [i.strip() for i in query]
 
             posts = []
-            # здесь составляется sql запрос
+            # an sql query is compiled here
             for i in range(len(query)):
-                posts.append(Anek.text.ilike(f'%{query[i]}%'))  # text ILIKE '%query[i]%'
+                # text ILIKE '%query[i]%'
+                posts.append(Anek.text.ilike(f'%{query[i]}%'))
 
-            # если в поиск ввести 'американец;немец;русский', то финальный sql запрос будет таким:
+            # if you enter 'word1;word2;word3', then the final sql query will be like this:
             '''SELECT * FROM anek
-            WHERE text ILIKE '%американец%'
-            AND text ILIKE '%немец%'
-            AND text ILIKE '%русский%'
+            WHERE text ILIKE '%word1%'
+            AND text ILIKE '%word2%'
+            AND text ILIKE '%word3%'
             ORDER BY id DESC;'''
             posts = Anek.query.filter(and_(*posts)).order_by(Anek.id.desc())
 
-        # если ; нет то поиск работает по прямому вхождению
+        # if there is no ; then the search works by direct occurrence
         else:
             '''SELECT * FROM anek
-            WHERE text ILIKE '%американец%
+            WHERE text ILIKE '%word%
             ORDER BY id DESC;'''
-            posts = Anek.query.filter(Anek.text.ilike(f'%{query}%')).order_by(Anek.id.desc())
+            posts = Anek.query.filter(Anek.text.ilike(
+                f'%{query}%')).order_by(Anek.id.desc())
 
     return posts
 
 
-# вывод 10 случайных анекдотов на главную страницу
+# output of 10 random jokes to the main page
 def random_anekdot():
     '''SELECT * FROM anek
     ORDER BY random()
@@ -73,18 +75,15 @@ def random_anekdot():
     return lst
 
 
-# функция выдаёт максимальный id = кол-во анекдотов в базе
+# the function outputs the maximum id - number of jokes in the database
 def len_base():
     # SELECT max(id) FROM anek;
     result = db.session.query(func.max(Anek.id)).first()
-    return result[0]  # на выходе кортеж типа (12345,) поэтому нулевой индекс
+    return result[0]  # the output is a tuple (12345,) so the index is 0
 
 
-# добавление анекдота в базу
+# add an anecdote to the database
 def add_anekdot(new_anekdot):
-    # id прописывается автоматически, указывать его не нужно
-    # rating по умолчанию 0 и тоже не указывается в синтаксисе SQLAlchemy
-    # но если составлять sql запрос, то rating нужно указывать
     # INSERT INTO anek VALUES ('text', 0)
     anekdot = Anek(text=new_anekdot)
     db.session.add(anekdot)
@@ -92,40 +91,40 @@ def add_anekdot(new_anekdot):
     return anekdot.id
 
 
-# лайк
+# like
 def likes(id):
     '''SELECT * FROM anek
     WHERE id=12345;'''
     like = Anek.query.filter_by(id=id).first()
     '''UPDATE anek SET rating = rating + 1
     WHERE id = 12345;'''
-    like.rating += 1  # число рейтинга увеличивается на 1
+    like.rating += 1  # the rating number increases by 1
     db.session.commit()
 
 
-# дизлайк
+# dislike
 def dislikes(id):
     '''SELECT * FROM anek
     WHERE id=12345;'''
     dislike = Anek.query.filter_by(id=id).first()
     '''UPDATE anek SET rating = rating - 1
     WHERE id = 12345;'''
-    dislike.rating -= 1  # число рейтинга уменьшается на 1
+    dislike.rating -= 1  # the rating number decreases by 1
     db.session.commit()
 
 
-# новые анекдоты
+# last anecdotes
 def new_anecdotes():
     '''SELECT * FROM anek
     ORDER BY id DESC
     LIMIT 100;'''
-    # не знаю что такое from_self(), но без него пагинация не работает
+    # I don't know what from_self() is, but pagination doesn't work without it
     # https://docs.sqlalchemy.org/en/14/orm/query.html#sqlalchemy.orm.Query.from_self
     new = Anek.query.order_by(Anek.id.desc()).limit(100).from_self()
     return new
 
 
-# лучшие анекдоты
+# best anecdotes
 def best_anecdotes():
     '''SELECT * FROM anek
     ORDER BY rating DESC
