@@ -29,3 +29,11 @@
         {% endif %}
     </div>
 {% endmacro %}
+
+{% macro results_page(results) %}
+    {% for result in results %}
+        <pre><b>{{ result.id }}  Рейтинг: {{ result.rating }}</b></pre>
+        <pre>{{ result.text }}</pre>
+        <hr class="line0">
+    {% endfor %}
+{% endmacro %}

@@ -6,11 +6,7 @@
 {% endblock %}
 
 {% block content %}
-    {% for result in results %}
-        <pre><b>{{ result.id }}  Рейтинг: {{ result.rating }}</b></pre>
-        <pre>{{ result.text }}</pre>
-        <hr class="line0">
-    {% endfor %}
+    {{ macro.results_page(results) }}
 {% endblock %}
 
 {% block search1 %}
