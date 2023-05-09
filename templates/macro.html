@@ -32,7 +32,11 @@
 
 {% macro results_page(results) %}
     {% for result in results %}
-        <pre><b>{{ result.id }}  Рейтинг: {{ result.rating }}</b></pre>
+        <pre><b>id: {{ result.id }}
+Рейтинг: {{ result.rating }}
+Дата добавления: {{ result.date }}
+
+</b></pre>
         <pre>{{ result.text }}</pre>
         <hr class="line0">
     {% endfor %}

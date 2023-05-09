@@ -35,8 +35,7 @@ def results():
     if query:                           # if the user entered something into the search
         return if_query(query)          # saving a search query in cookies
 
-    query_from_cookie = request.cookies.get(
-        'query')  # getting a string from a cookie
+    query_from_cookie = request.cookies.get('query')  # getting a string from a cookie
     results = search(query_from_cookie)               # database search
 
     # for pagination

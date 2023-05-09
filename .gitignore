@@ -2,3 +2,6 @@
 __pycache__
 .env
 test
+backup.py
+backup.sql
+test.py

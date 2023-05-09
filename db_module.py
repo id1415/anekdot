@@ -22,9 +22,10 @@ class Anek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(2000), unique=True, nullable=False)
     rating = db.Column(db.Integer, nullable=False, default=0)
+    date = db.Column(db.Date, nullable=False, default=func.now())
 
     def __repr__(self):
-        return f'[{self.id}, {self.text}, {self.rating}]'
+        return f'[{self.id}, {self.text}, {self.rating}, {self.date}]'
 
 
 def search(query):
