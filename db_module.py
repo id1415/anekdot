@@ -117,7 +117,7 @@ def dislikes(id):
 # last anecdotes
 def new_anecdotes():
     '''SELECT * FROM anek
-    ORDER BY id DESC
+    ORDER BY date DESC
     LIMIT 100;'''
     # I don't know what from_self() is, but pagination doesn't work without it
     # https://docs.sqlalchemy.org/en/14/orm/query.html#sqlalchemy.orm.Query.from_self
