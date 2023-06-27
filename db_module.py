@@ -121,7 +121,7 @@ def new_anecdotes():
     LIMIT 100;'''
     # I don't know what from_self() is, but pagination doesn't work without it
     # https://docs.sqlalchemy.org/en/14/orm/query.html#sqlalchemy.orm.Query.from_self
-    new = Anek.query.order_by(Anek.id.desc()).limit(100).from_self()
+    new = Anek.query.order_by(Anek.date.desc()).limit(100).from_self()
     return new
 
 
