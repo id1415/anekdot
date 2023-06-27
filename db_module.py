@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func, and_
+from sqlalchemy import create_engine, case, desc
+from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 app = Flask(__name__)
@@ -16,8 +18,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+engine = create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
+Session = sessionmaker(bind=engine)
+session = Session()
 
-# there are three columns in the table (id, text, rating)
+# there are forth columns in the table (id, text, rating, date)
 class Anek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(2000), unique=True, nullable=False)
@@ -121,7 +126,8 @@ def new_anecdotes():
     LIMIT 100;'''
     # I don't know what from_self() is, but pagination doesn't work without it
     # https://docs.sqlalchemy.org/en/14/orm/query.html#sqlalchemy.orm.Query.from_self
-    new = Anek.query.order_by(Anek.date.desc()).limit(100).from_self()
+    # new = Anek.query.order_by(Anek.date).limit(100).from_self()
+    new = Anek.query.filter(Anek.date.isnot(None)).order_by(Anek.date.desc()).limit(100).from_self()
     return new
 
 
