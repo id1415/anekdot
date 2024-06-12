@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Length
 # the minimum text length is 10 characters, the maximum is 2000
 class TextForm(FlaskForm):
     text = TextAreaField(validators=[DataRequired(), Length(min=10, max=2000)])
-    recaptcha = RecaptchaField()
+#    recaptcha = RecaptchaField()
 
 # search form
 # the minimum text length is 3 characters, the maximum is 50
@@ -19,3 +19,6 @@ class SearchForm(FlaskForm):
 class LikeForm(FlaskForm):
     like = SubmitField(render_kw={"class": 'like', "type": 'image', "alt": 'like'})
     dislike = SubmitField(render_kw={"class": 'dislike', "type": 'image', "alt": 'dislike'})
+
+class TagsForm(FlaskForm):
+    tags = SearchField(validators=[Length(max=30)])

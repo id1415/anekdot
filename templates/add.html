@@ -16,7 +16,13 @@
     <form method="POST">
         {{ text_form.csrf_token }}
         {{ text_form.text }}
-        {{ text_form.recaptcha }}
+<pre>
+<b>Тег</b> (не обязательно):
+</pre>
+        <div class="tags">
+            {{ tags_form.tags }}
+        </div>
+<!--        {{ text_form.recaptcha }} -->
         <div class="d1">
         <input class="button" type="submit" value="Отправить">
         </div>

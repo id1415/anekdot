@@ -9,6 +9,7 @@
     {% for post in anekdots %}
         <pre><b>id: {{ post.id }}
 Дата добавления: {{ post.date }}
+Тег: <a href="/results?tags={{ post.tags }}" id="a1">{{ post.tags }}</a>
         </b></pre>
         <pre>{{ post.text }}</pre>
         

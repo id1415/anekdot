@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from flask import render_template, request, flash, redirect, url_for, make_response
 from db_module import app, random_anekdot, len_base, add_anekdot, \
-    likes, dislikes, new_anecdotes, best_anecdotes, search
-from forms import TextForm, SearchForm, LikeForm
+    likes, dislikes, new_anecdotes, best_anecdotes, search, tags_db
+from forms import TextForm, SearchForm, LikeForm, TagsForm
 
 # environment variables
 load_dotenv()
@@ -15,6 +15,7 @@ app.config['RECAPTCHA_PRIVATE_KEY'] = os.getenv('RECAPTCHA_PRIVATE_KEY')
 menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         {'name': 'Лучшие анекдоты', 'url': 'best'},
         {'name': 'Новые анекдоты', 'url': 'new'},
+        {'name': 'Теги', 'url': 'tags'},
         {'name': 'Добавить анекдот', 'url': 'add'},
         {'name': 'О сайте', 'url': 'about'},
         ]
@@ -27,16 +28,28 @@ def if_query(query):
     return resp
 
 
-# search results
+# results page
 @app.route('/results', methods=['GET', 'POST'])
 def results():
+    flag = 0  # if flag == 0 search without tag
+
     # the following lines are copied for each page so that the search field works everywhere
     query = request.args.get('search')  # getting data from the search field
     if query:                           # if the user entered something into the search
         return if_query(query)          # saving a search query in cookies
 
-    query_from_cookie = request.cookies.get('query')  # getting a string from a cookie
-    results = search(query_from_cookie)               # database search
+    query = request.args.get('query')
+    if query:
+        return if_query(query)
+
+    tag = request.args.get('tags')
+    if tag:
+        flag = 1
+        return if_query(tag)
+
+    else:
+        query_from_cookie = request.cookies.get('query')  # getting a string from a cookie
+        results = search(query_from_cookie, flag)         # database search
 
     # for pagination
     page = request.args.get('page', 1, type=int)
@@ -52,8 +65,24 @@ def results():
                            results=results,           # search results
                            )
 
+#TAGS page
+@app.route('/tags')
+def tags():
+    query = request.args.get('search')
+    if query:
+        return if_query(query)
 
-# Best anecdotes page
+    tags_db()
+    results = tags_db()
+
+    return render_template('tags.html',
+                           menu=menu,
+                           title='Теги',
+                           search_form=SearchForm(),
+                           results=results,
+                          )
+
+# BEST page
 @app.route('/best')
 def best():
     query = request.args.get('search')
@@ -72,7 +101,7 @@ def best():
                            )
 
 
-# New anecdotes page
+# NEW page
 @app.route('/new')
 def new():
     query = request.args.get('search')
@@ -91,7 +120,7 @@ def new():
                            )
 
 
-# the main page
+# MAIN page
 @app.route('/', methods=['GET', 'POST'])
 def index():
     query = request.args.get('search')
@@ -121,7 +150,7 @@ def index():
                            )
 
 
-# About page
+# ABOUT page
 @app.route('/about')
 def about():
     query = request.args.get('search')
@@ -136,33 +165,38 @@ def about():
                            )
 
 
-# ADD ANECDOTE page
+# ADD page
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     query = request.args.get('search')
     if query:
         return if_query(query)
 
-    text_form = TextForm()                   # form for adding jokes
+    text_form = TextForm()                   # form for text
+    tags_form = TagsForm()                   # form for tags
     if text_form.validate_on_submit():       # if the query is POST
+        if tags_form.validate_on_submit():
+            new_tag = tags_form.tags.data
         new_anekdot = text_form.text.data    # text from the form
         # adding to the database, the function returns the id of the new joke
-        id = add_anekdot(new_anekdot)
-        text_form = TextForm(formdata=None)  # cleaning the form
+        id = add_anekdot(new_anekdot, new_tag)
+        text_form = TextForm(formdata=None)  # cleaning the text form
+        tags_form = TagsForm(formdata=None)  # cleaning the tags form
         # if you don't clean the form, then
-        # you will be able to send text infinitely
+        # you'll be able to send the same text infinit times
         # captcha does not prevent this
 
         # flash message about successful sending
         flash(f'Анекдот добавлен, ему присвоен id - {id}', category='success')
-    elif text_form.recaptcha.errors:  # if the captcha hasn't worked
-        flash('Ошибка валидации!', category='error')
+#    elif text_form.recaptcha.errors:  # if the captcha hasn't worked
+#        flash('Ошибка валидации!', category='error')
 
     return render_template('add.html',
                            menu=menu,
                            title='Добавить анекдот',
                            search_form=SearchForm(),
                            text_form=text_form,
+                           tags_form=tags_form,
                            )
 
 

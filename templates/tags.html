@@ -1,0 +1,8 @@
+{% import 'macro.html' as macro %}
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for result in results %}
+        <a href="/results?tags={{ result }}">{{ result }}</a><br/>
+    {% endfor %}
+{% endblock %}

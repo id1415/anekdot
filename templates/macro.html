@@ -35,8 +35,9 @@
         <pre><b>id: {{ result.id }}
 Рейтинг: {{ result.rating }}
 Дата добавления: {{ result.date }}
-
-</b></pre>
+Тег: <a class='a1' href="/results?tags={{ result.tags }}">{{ result.tags }}</a>
+        </b></pre>
+        
         <pre>{{ result.text }}</pre>
         <hr class="line0">
     {% endfor %}

@@ -22,20 +22,24 @@ engine = create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# there are forth columns in the table (id, text, rating, date)
+# there are five columns in the table (id, text, rating, date, tags)
 class Anek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(2000), unique=True, nullable=False)
     rating = db.Column(db.Integer, nullable=False, default=0)
     date = db.Column(db.Date, nullable=False, default=func.now())
+    tags = db.Column(db.String(30), nullable=True)
 
     def __repr__(self):
-        return f'[{self.id}, {self.text}, {self.rating}, {self.date}]'
+        return f'[{self.id}, {self.text}, {self.rating}, {self.date}, {self.tags}]'
 
 
-def search(query):
+def search(query, flag): #flag for tags
+    if flag == 1:
+        posts = Anek.query.filter(Anek.tags == query)
+
     # if the search query is a number, then id=number is output
-    if query.isdigit():
+    elif query.isdigit() and type(query.isdigit()) != None:
         query = int(query)
         '''SELECT * FROM anek 
         WHERE id = 12345;'''
@@ -71,6 +75,16 @@ def search(query):
 
     return posts
 
+# List of tags
+def tags_db():
+    '''SELECT DISTINCT tags from anek
+    WHERE tags != '';
+    '''
+    lst = []
+    for tag in session.query(Anek.tags.distinct()):
+        if tag[0] != '':
+            lst.extend(tag)
+    return lst
 
 # output of 10 random jokes to the main page
 def random_anekdot():
@@ -89,9 +103,9 @@ def len_base():
 
 
 # add an anecdote to the database
-def add_anekdot(new_anekdot):
+def add_anekdot(new_anekdot, new_tag):
     # INSERT INTO anek VALUES ('text', 0)
-    anekdot = Anek(text=new_anekdot)
+    anekdot = Anek(text=new_anekdot, tags=new_tag)
     db.session.add(anekdot)
     db.session.commit()
     return anekdot.id
