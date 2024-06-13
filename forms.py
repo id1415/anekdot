@@ -23,4 +23,5 @@ class LikeForm(FlaskForm):
 # tag form
 # max length = 30
 class TagsForm(FlaskForm):
-    tags = SearchField(validators=[Length(max=30)])
+    tags = SearchField(validators=[Length(max=30)],
+                       render_kw={"placeholder": "Введите тег..."})
