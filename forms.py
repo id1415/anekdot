@@ -20,5 +20,7 @@ class LikeForm(FlaskForm):
     like = SubmitField(render_kw={"class": 'like', "type": 'image', "alt": 'like'})
     dislike = SubmitField(render_kw={"class": 'dislike', "type": 'image', "alt": 'dislike'})
 
+# tag form
+# max length = 30
 class TagsForm(FlaskForm):
     tags = SearchField(validators=[Length(max=30)])

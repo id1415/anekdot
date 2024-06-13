@@ -21,48 +21,49 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
         ]
 
 
-# the function saves the query from the search in cookies
-def if_query(query, tag, flag=0):
+# the function saves some data in cookies (from search field or tag)
+def if_query(query, tag):
     resp = make_response(redirect(url_for('results')))
-    if flag == 1:
+    if tag:
         resp.set_cookie('query', '')
         resp.set_cookie('tag', tag)
     else:
         resp.set_cookie('tag', '')
-        resp.set_cookie('query', query, httponly=True)
+        resp.set_cookie('query', query)
     return resp
 
 
 # results page
 @app.route('/results', methods=['GET', 'POST'])
 def results():
-    # the following lines are copied for each page so that the search field works everywhere
+    # search query is stored in cookies
     query = request.args.get('search')  # getting data from the search field
-    if query:                           # if the user entered something into the search
-        return if_query(query, tag='')          # saving a search query in cookies
+    if query:                           # if user entered something into the search field
+        return if_query(query, '')      # saving a search query in cookies
 
-    tag = request.args.get('tags')
+    tag = request.args.get('tags')      # the same for tag
     if tag:
-        return if_query('', tag, flag=1)
+        return if_query('', tag)
 
-    query_from_cookie = request.cookies.get('query')  # getting a string from a cookie
+    # getting a string from cookie
+    query_from_cookie = request.cookies.get('query')
     tag_from_cookie = request.cookies.get('tag')
+
+    # database search is performed here
     if tag_from_cookie:
-        #query_from_cookie = tag_from_cookie
+        title = tag_from_cookie
         results = search(tag_from_cookie, flag=1)
     if query_from_cookie:
-        results = search(query_from_cookie)               # database search
+        title = query_from_cookie
+        results = search(query_from_cookie)
 
-    # for pagination
+    # pagination results
     page = request.args.get('page', 1, type=int)
-    results = results.paginate(
-        page=page, per_page=10, error_out=True)  # pagination
+    results = results.paginate(page=page, per_page=10, error_out=True)
 
-    # everything inside the render_template functions,
-    # used in jinja syntax in html files
     return render_template('results.html',
                            menu=menu,                 # site menu
-                           title=query_from_cookie,   # page title
+                           title=title,               # page title
                            search_form=SearchForm(),  # search field
                            results=results,           # search results
                            )
@@ -74,8 +75,7 @@ def tags():
     if query:
         return if_query(query, tag='')
 
-    tags_db()
-    results = tags_db()
+    results = tags_db()  # getting tag's list from db
 
     return render_template('tags.html',
                            menu=menu,
@@ -91,7 +91,9 @@ def best():
     if query:
         return if_query(query, tag='')
 
-    results = best_anecdotes()  # 100 jokes with the highest ratings are displayed
+    results = best_anecdotes()  # 100 jokes with the highest ratings
+
+    # pagination
     page = request.args.get('page', 1, type=int)
     results = results.paginate(page=page, per_page=10, error_out=True)
 
@@ -110,7 +112,9 @@ def new():
     if query:
         return if_query(query, tag='')
 
-    results = new_anecdotes()  # 100 latest jokes are displayed
+    results = new_anecdotes()  # 100 latest jokes
+
+    # pagination
     page = request.args.get('page', 1, type=int)
     results = results.paginate(page=page, per_page=10, error_out=True)
 
@@ -136,12 +140,12 @@ def index():
         like = request.form['like']
         dislike = request.form['dislike']
 
-        if like:               # if the user clicked on like
-            likes(like)        # the number of rating in the database increases by 1
-        if dislike:            # if the user clicked on dislike
-            dislikes(dislike)  # the number is decreases by 1
+        if like:               # if user clicked like
+            likes(like)        # rating increases by 1
+        if dislike:            # if user clicked dislike
+            dislikes(dislike)  # rating decreases by 1
 
-    anekdots = random_anekdot()  # the function outputs 10 random jokes per page
+    anekdots = random_anekdot()  # 10 random jokes from db
 
     return render_template('index.html',
                            menu=menu,
@@ -178,19 +182,21 @@ def add():
     tags_form = TagsForm()                   # form for tags
     if text_form.validate_on_submit():       # if the query is POST
         if tags_form.validate_on_submit():
-            new_tag = str.lower(tags_form.tags.data)
-        new_anekdot = text_form.text.data    # text from the form
-        # adding to the database, the function returns the id of the new joke
+            new_tag = str.lower(tags_form.tags.data) # text from tag field
+        new_anekdot = text_form.text.data    # text from form field
+
+        # adding to db, the function returns the id of the new joke
         id = add_anekdot(new_anekdot, new_tag)
+
+        # forms need to be cleaned
+        # otherwise user will be able to send the same text infinit times
+        # captcha does not prevent this
         text_form = TextForm(formdata=None)  # cleaning the text form
         tags_form = TagsForm(formdata=None)  # cleaning the tags form
-        # if you don't clean the form, then
-        # you'll be able to send the same text infinit times
-        # captcha does not prevent this
 
         # flash message about successful sending
         flash(f'Анекдот добавлен, ему присвоен id - {id}', category='success')
-    elif text_form.recaptcha.errors:  # if the captcha hasn't worked
+    elif text_form.recaptcha.errors:  # if captcha hasn't worked
         flash('Ошибка валидации!', category='error')
 
     return render_template('add.html',
