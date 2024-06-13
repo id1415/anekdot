@@ -22,34 +22,36 @@ menu = [{'name': 'ОБНОВИТЬ', 'url': '/'},
 
 
 # the function saves the query from the search in cookies
-def if_query(query):
+def if_query(query, tag, flag=0):
     resp = make_response(redirect(url_for('results')))
-    resp.set_cookie('query', query, httponly=True)
+    if flag == 1:
+        resp.set_cookie('query', '')
+        resp.set_cookie('tag', tag)
+    else:
+        resp.set_cookie('tag', '')
+        resp.set_cookie('query', query, httponly=True)
     return resp
 
 
 # results page
 @app.route('/results', methods=['GET', 'POST'])
 def results():
-    flag = 0  # if flag == 0 search without tag
-
     # the following lines are copied for each page so that the search field works everywhere
     query = request.args.get('search')  # getting data from the search field
     if query:                           # if the user entered something into the search
-        return if_query(query)          # saving a search query in cookies
-
-    query = request.args.get('query')
-    if query:
-        return if_query(query)
+        return if_query(query, tag='')          # saving a search query in cookies
 
     tag = request.args.get('tags')
     if tag:
-        flag = 1
-        return if_query(tag)
+        return if_query('', tag, flag=1)
 
-    else:
-        query_from_cookie = request.cookies.get('query')  # getting a string from a cookie
-        results = search(query_from_cookie, flag)         # database search
+    query_from_cookie = request.cookies.get('query')  # getting a string from a cookie
+    tag_from_cookie = request.cookies.get('tag')
+    if tag_from_cookie:
+        #query_from_cookie = tag_from_cookie
+        results = search(tag_from_cookie, flag=1)
+    if query_from_cookie:
+        results = search(query_from_cookie)               # database search
 
     # for pagination
     page = request.args.get('page', 1, type=int)
@@ -70,7 +72,7 @@ def results():
 def tags():
     query = request.args.get('search')
     if query:
-        return if_query(query)
+        return if_query(query, tag='')
 
     tags_db()
     results = tags_db()
@@ -87,7 +89,7 @@ def tags():
 def best():
     query = request.args.get('search')
     if query:
-        return if_query(query)
+        return if_query(query, tag='')
 
     results = best_anecdotes()  # 100 jokes with the highest ratings are displayed
     page = request.args.get('page', 1, type=int)
@@ -106,7 +108,7 @@ def best():
 def new():
     query = request.args.get('search')
     if query:
-        return if_query(query)
+        return if_query(query, tag='')
 
     results = new_anecdotes()  # 100 latest jokes are displayed
     page = request.args.get('page', 1, type=int)
@@ -125,7 +127,7 @@ def new():
 def index():
     query = request.args.get('search')
     if query:
-        return if_query(query)
+        return if_query(query, tag='')
 
     # like, dislike forms
     like_form = LikeForm()
@@ -155,7 +157,7 @@ def index():
 def about():
     query = request.args.get('search')
     if query:
-        return if_query(query)
+        return if_query(query, tag='')
 
     return render_template('about.html',
                            menu=menu,
@@ -170,13 +172,13 @@ def about():
 def add():
     query = request.args.get('search')
     if query:
-        return if_query(query)
+        return if_query(query, tag='')
 
     text_form = TextForm()                   # form for text
     tags_form = TagsForm()                   # form for tags
     if text_form.validate_on_submit():       # if the query is POST
         if tags_form.validate_on_submit():
-            new_tag = tags_form.tags.data
+            new_tag = str.lower(tags_form.tags.data)
         new_anekdot = text_form.text.data    # text from the form
         # adding to the database, the function returns the id of the new joke
         id = add_anekdot(new_anekdot, new_tag)
@@ -188,8 +190,8 @@ def add():
 
         # flash message about successful sending
         flash(f'Анекдот добавлен, ему присвоен id - {id}', category='success')
-#    elif text_form.recaptcha.errors:  # if the captcha hasn't worked
-#        flash('Ошибка валидации!', category='error')
+    elif text_form.recaptcha.errors:  # if the captcha hasn't worked
+        flash('Ошибка валидации!', category='error')
 
     return render_template('add.html',
                            menu=menu,

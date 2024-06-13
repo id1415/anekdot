@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Length
 # the minimum text length is 10 characters, the maximum is 2000
 class TextForm(FlaskForm):
     text = TextAreaField(validators=[DataRequired(), Length(min=10, max=2000)])
-#    recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField()
 
 # search form
 # the minimum text length is 3 characters, the maximum is 50

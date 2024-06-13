@@ -34,7 +34,7 @@ class Anek(db.Model):
         return f'[{self.id}, {self.text}, {self.rating}, {self.date}, {self.tags}]'
 
 
-def search(query, flag): #flag for tags
+def search(query, flag=0): #flag for tags
     if flag == 1:
         posts = Anek.query.filter(Anek.tags == query)
 

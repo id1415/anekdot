@@ -17,12 +17,13 @@
         {{ text_form.csrf_token }}
         {{ text_form.text }}
 <pre>
-<b>Тег</b> (не обязательно):
+<b>Тег</b> (необязательно):
+Новый тег будет отображён на странице Теги.
 </pre>
         <div class="tags">
             {{ tags_form.tags }}
         </div>
-<!--        {{ text_form.recaptcha }} -->
+            {{ text_form.recaptcha }}
         <div class="d1">
         <input class="button" type="submit" value="Отправить">
         </div>
