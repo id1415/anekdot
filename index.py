@@ -182,7 +182,7 @@ def add():
     tags_form = TagsForm()                   # form for tags
     if text_form.validate_on_submit():       # if the query is POST
         if tags_form.validate_on_submit():
-            new_tag = str.lower(tags_form.tags.data) # text from tag field
+            new_tag = tags_form.tags.data    # text from tag field
         new_anekdot = text_form.text.data    # text from form field
 
         # adding to db, the function returns the id of the new joke

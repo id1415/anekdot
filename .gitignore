@@ -5,3 +5,5 @@ test
 backup.py
 backup.sql
 test.py
+db_copy.txt
+

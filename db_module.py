@@ -33,6 +33,14 @@ class Anek(db.Model):
     def __repr__(self):
         return f'[{self.id}, {self.text}, {self.rating}, {self.date}, {self.tags}]'
 
+#copy table to file
+'''
+with app.app_context():
+    posts = Anek.query.all()
+    with open('db_copy.txt', 'w') as file:
+        for post in posts:
+            file.write(f'({post.id}, {post.text}, {post.rating}, {post.date}, {post.tags}),\n')
+'''
 
 def search(query, flag=0): #flag for tags
     if flag == 1:
